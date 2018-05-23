@@ -38,6 +38,6 @@ object Simple {
       atomicReference.getAndUpdate(new function.UnaryOperator[List[Int]] {
         override def apply(t: List[Int]): List[Int] = t :+ s
       }).right[Throwable].map(_ => ())}
-    } foreach(_ => println(atomicReference.get()))
+    } foreach(_ => println("This is fun  " + atomicReference.get()))
   }
 }

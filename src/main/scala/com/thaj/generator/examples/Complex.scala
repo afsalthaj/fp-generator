@@ -40,8 +40,8 @@ object Complex {
     // combine them to be just 1
     val combinedGenerator: Generator[Int, List[Int]] = Generator.sequence(generators)
 
-    // What on earth is combined generator. Its a generator where each side effect would involve `num` of
-    // records until it reaches a condition which is 1000 - beautiful!
+    // What on earth is combined generator. Its a generator where each side effect involving
+    // `num` of records (ex: sending data as a batch) until it the data reaches a condition which is 1000 - beautiful!
     combinedGenerator.run[Future, Throwable](100){t => Future[Throwable \/ Unit] {
       println(s"In thread: ${Thread.currentThread().getName}: values are sent as a batch: $t").right[Throwable]
     }}

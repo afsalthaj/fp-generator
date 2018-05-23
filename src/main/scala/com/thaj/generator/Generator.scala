@@ -1,17 +1,13 @@
 package com.thaj.generator
 
-import scalaz.{-\/, EitherT, Monad, \/}
+import scalaz.{EitherT, Monad, \/}
 import scalaz.syntax.either._
 import scalaz.syntax.monad._
 
 // A very simple generator service which may look similar to State monad, but more intuitive to use
 // for any data generation with nextValue as an optional state and value,
 // and the initial value of state being a primary object in the algebra.
-// Disappeared from scalaz from a very old version.
-trait Zero[State] {
-  def zero: State
-}
-
+// Sorry if a library exists - learning it is equivalent in time to building this!
 trait Generator[State, A] { self =>
   def next: State => Option[(State, A)]
   // In this way you can start with a generator service for a single component and chain across
@@ -56,14 +52,14 @@ object Generator {
   x.foldLeft(Generator.unit[S, List[A]](List[A]()))((acc, a) => a.map2(acc)(_ :: _))
 
   // A seamless finite/infinite data gen
-  private def unfoldM[S, A, E, F[_]: Monad](z: S)(delay: Long)(f: S => Option[(S, A)])(sideEffect: A => F[E \/ Unit]): F[E \/ Unit] = {
+  private def unfoldM[F[_]: Monad, S, A, E](z: S)(delay: Long)(f: S => Option[(S, A)])(sideEffect: A => F[E \/ Unit]): F[E \/ Unit] = {
     f(z) match {
       case Some((state, value)) => EitherT(sideEffect(value)).foldM(
         _.left[Unit].pure[F],
         _ => {
           // Haha, who cares!
           Thread.sleep(delay)
-          unfoldM[S, A, E, F](state)(delay)(f)(sideEffect)
+          unfoldM[F, S, A, E](state)(delay)(f)(sideEffect)
         }
       )
 
