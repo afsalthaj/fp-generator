@@ -51,7 +51,7 @@ object Generator {
   // A seamless finite/infinite data gen
   private def unfoldM[F[_]: Monad, S, A, E](z: S)(delay: Long)(f: S => Option[(S, A)])(sideEffect: A => F[E \/ Unit]): F[E \/ Unit] = {
     f(z) match {
-      case Some((state, value)) => {
+      case Some((state, value)) =>
         EitherT(sideEffect(value)).foldM(
           _.left[Unit].pure[F],
           _ => {
@@ -60,7 +60,6 @@ object Generator {
             unfoldM[F, S, A, E](state)(delay)(f)(sideEffect)
           }
         )
-      }
 
       case None =>
         // Println - Hmm.!

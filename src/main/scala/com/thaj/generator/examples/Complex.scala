@@ -24,7 +24,7 @@ object Complex {
     // Say u have already got a generator that goes from Int to Int
     implicit val generator: Generator[Int, Int] =  new Generator[Int, Int] {
       override def next: (Int) => Option[(Int, Int)] = s => {
-        (s < 1000).option {
+        (s < 100).option {
           val ss = s + 2
           (ss, ss)
         }
@@ -42,7 +42,7 @@ object Complex {
 
     // What on earth is this combinedGenerator ? Its a generator where each side effect deals with
     // `num` of records (ex: for sending data as a batch) until the data reaches the condition mentioned in the generator instance.
-    combinedGenerator.run[Future, Throwable](100){t => Future[Throwable \/ Unit] {
+    combinedGenerator.run[Future, Throwable](1){t => Future[Throwable \/ Unit] {
       println(s"In thread: ${Thread.currentThread().getName}: values are sent as a batch: $t").right[Throwable]
     }}
   }
