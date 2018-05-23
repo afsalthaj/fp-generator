@@ -8,29 +8,29 @@ import scalaz.syntax.monad._
 // for any data generation with nextValue as an optional state and value,
 // and the initial value of state being a primary object in the algebra.
 // Sorry if a library exists - learning it is equivalent in time to building this!
-trait Generator[State, A] { self =>
-  def next: State => Option[(State, A)]
+trait Generator[S, A] { self =>
+  def next: S => Option[(S, A)]
   // In this way you can start with a generator service for a single component and chain across
-  def map[B](f: A => B): Generator[State, B] = {
-    new Generator[State, B] {
-      override def next: State => Option[(State,B)] =
+  def map[B](f: A => B): Generator[S, B] = {
+    new Generator[S, B] {
+      override def next: S => Option[(S,B)] =
         self.next(_).map { case (s, a) => (s, f(a)) }
     }
   }
 
-  def flatMap[B](f: A => Generator[State, B]): Generator[State, B] =
-    new Generator[State, B] {
-      override def next: State => Option[(State, B)] = s => {
-        val ss: Option[(State, A)] = self.next(s)
+  def flatMap[B](f: A => Generator[S, B]): Generator[S, B] =
+    new Generator[S, B] {
+      override def next: S => Option[(S, B)] = s => {
+        val ss: Option[(S, A)] = self.next(s)
         ss.flatMap(t => f(t._2).next(t._1))
       }
     }
 
-  def map2[B, C](b: Generator[State, B])(f: (A, B) => C): Generator[State, C] =
+  def map2[B, C](b: Generator[S, B])(f: (A, B) => C): Generator[S, C] =
     self.flatMap(bb => b.map(cc => f(bb, cc)))
 
   // Ex: GeneratorService[A, B].run(1000)(a => sendEventHub(a).map(_ => log("sent data"))(identity)
-  def run[F[_]: Monad, E](delay: Long)(sideEffect: A => F[E \/ Unit])(implicit m: Zero[State]): F[\/[E, Unit]] =
+  def run[F[_]: Monad, E](delay: Long)(sideEffect: A => F[E \/ Unit])(implicit m: Zero[S]): F[\/[E, Unit]] =
     Generator.unfoldM(m.zero)(delay)(this.next)(sideEffect)
 }
 
@@ -63,7 +63,7 @@ object Generator {
       }
 
       case None =>
-        // Done with accepting functions as arguments, let me print - enough is enough!
+        // Println - Hmm.!
         println("Finished sending the data!").right[E].pure[F]
     }
   }
