@@ -40,13 +40,14 @@ object Generator {
 
   def unit[State, A](a: => A): Generator[State, A] =
     new Generator[State, A] {
-      override def next: State => Option[(State, A)] = s => Some((s, a))
+      override def next: State => Option[(State, A)] =
+        s => Some((s, a))
     }
 
   // multiple generator services of S -> A , can be converted to S -> List[A] allowing you
   // to do things like batch insert.
   def sequence[S, A](list: List[Generator[S, A]]): Generator[S, List[A]] =
-  list.foldLeft(Generator.unit[S, List[A]](List[A]()))((acc, a) => a.map2(acc)(_ :: _))
+    list.foldLeft(Generator.unit[S, List[A]](List[A]()))((acc, a) => a.map2(acc)(_ :: _))
 
   // A seamless finite/infinite data gen
   private def unfoldM[F[_]: Monad, S, A, E](z: S)(delay: Long)(f: S => Option[(S, A)])(sideEffect: A => F[E \/ Unit]): F[E \/ Unit] = {
