@@ -1,7 +1,6 @@
 package com.thaj.generator.examples
 
 import java.util.concurrent.atomic.AtomicReference
-import java.util.function
 
 import com.thaj.generator.{Generator, Zero}
 

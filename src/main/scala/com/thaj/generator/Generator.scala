@@ -13,11 +13,8 @@ trait Generator[State, A] { self =>
   // In this way you can start with a generator service for a single component and chain across
   def map[B](f: A => B): Generator[State, B] = {
     new Generator[State, B] {
-      override def next: State => Option[(State,B)] = s => {
-        for {
-          ss <- self.next(s)
-        } yield (ss._1, f(ss._2))
-      }
+      override def next: State => Option[(State,B)] =
+        self.next(_).map { case (s, a) => (s, f(a)) }
     }
   }
 
