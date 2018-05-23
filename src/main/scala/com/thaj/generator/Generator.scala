@@ -48,20 +48,22 @@ object Generator {
 
   // multiple generator services of S -> A , can be converted to S -> List[A] allowing you
   // to do things like batch insert.
-  def sequence[S, A](x: List[Generator[S, A]]): Generator[S, List[A]] =
-  x.foldLeft(Generator.unit[S, List[A]](List[A]()))((acc, a) => a.map2(acc)(_ :: _))
+  def sequence[S, A](list: List[Generator[S, A]]): Generator[S, List[A]] =
+  list.foldLeft(Generator.unit[S, List[A]](List[A]()))((acc, a) => a.map2(acc)(_ :: _))
 
   // A seamless finite/infinite data gen
   private def unfoldM[F[_]: Monad, S, A, E](z: S)(delay: Long)(f: S => Option[(S, A)])(sideEffect: A => F[E \/ Unit]): F[E \/ Unit] = {
     f(z) match {
-      case Some((state, value)) => EitherT(sideEffect(value)).foldM(
-        _.left[Unit].pure[F],
-        _ => {
-          // Haha, who cares!
-          Thread.sleep(delay)
-          unfoldM[F, S, A, E](state)(delay)(f)(sideEffect)
-        }
-      )
+      case Some((state, value)) => {
+        EitherT(sideEffect(value)).foldM(
+          _.left[Unit].pure[F],
+          _ => {
+            // Haha, who cares!
+            Thread.sleep(delay)
+            unfoldM[F, S, A, E](state)(delay)(f)(sideEffect)
+          }
+        )
+      }
 
       case None =>
         // Done with accepting functions as arguments, let me print - enough is enough!

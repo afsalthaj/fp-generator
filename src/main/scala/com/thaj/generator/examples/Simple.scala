@@ -34,10 +34,8 @@ object Simple {
   }
 
   def main(args: Array[String]): Unit = {
-    Generator[Int, Int].run[Future, Throwable](1){s => Future[Throwable \/ Unit] {
-      atomicReference.getAndUpdate(new function.UnaryOperator[List[Int]] {
-        override def apply(t: List[Int]): List[Int] = t :+ s
-      }).right[Throwable].map(_ => ())}
-    } foreach(_ => println("This is fun  " + atomicReference.get()))
+    Generator[Int, Int].run[Future, Throwable](1){t => Future[Throwable \/ Unit] {
+      println(s"In thread: ${Thread.currentThread().getName}: single value is sent one by one: $t").right[Throwable]
+    }}
   }
 }
