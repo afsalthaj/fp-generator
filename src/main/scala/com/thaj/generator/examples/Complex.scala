@@ -31,17 +31,17 @@ object Complex {
       }
     }
 
-    // then you may need to send data as a batch. The number of batches and the number in each batch should be controllable
+    // then you may need to send data as a batch. Let us assume that the size of each batch is 10.
     val num: Int = 10
 
-    // Create that many generators as a normal step
+    // Let us create that many generators.
     val generators: List[Generator[Int, Int]] = List.fill(num)(Generator[Int, Int])
 
-    // combine them to be just 1
+    // We need Int -> List[Int] and not List [ Int -> Int ].. Let us sequence it.
     val combinedGenerator: Generator[Int, List[Int]] = Generator.sequence(generators)
 
-    // What on earth is combined generator. Its a generator where each side effect involving
-    // `num` of records (ex: sending data as a batch) until it the data reaches a condition which is 1000 - beautiful!
+    // What on earth is this combinedGenerator ? Its a generator where each side effect deals with
+    // `num` of records (ex: for sending data as a batch) until the data reaches the condition mentioned in the generator instance.
     combinedGenerator.run[Future, Throwable](100){t => Future[Throwable \/ Unit] {
       println(s"In thread: ${Thread.currentThread().getName}: values are sent as a batch: $t").right[Throwable]
     }}
