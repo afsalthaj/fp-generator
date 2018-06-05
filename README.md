@@ -13,11 +13,11 @@ Sometimes, as a user, we would like to specify the `rule for data generation` ba
 To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/examples).
 
 ## The abstraction aims at the following:
-1) Specify a `rule for data generation` as a simple function, a `processing function`  and then call run!
+1) Specify a `rule for data generation` as a simple function, a `processing function` (using `println` here for demo purpose. In real this could be sending data to external systems in an effect IO)  and then call run!
 
 ```scala
 
-  val generator =  Generator.create(0) {
+  val generator = Generator.create(0) {
     s => 
       if (s > 100)
         Some (s + 1, s + 1)
@@ -48,7 +48,7 @@ To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/
 ```scala
 
 // Our generator is as simple as specifying a zero val and the state changes
-    val generator1: Generator[Int, Int] =  Generator.create(0) {
+    val generator1 = Generator.create(0) {
       s => {
         (s < 100).option {
           val ss = s + 1
@@ -58,7 +58,7 @@ To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/
     }
 
     // Some instances may have different rules, different starting points
-    val generator2: Generator[Int, Int] =  Generator.create(2000) {
+    val generator2 = Generator.create(2000) {
       s => {
         (s < 10000).option {
           val ss = s + 100
@@ -68,7 +68,7 @@ To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/
     }
 
     // Some instances may have different rules, different starting points
-    val generator3: Generator[Int, Int] =  Generator.create(100000) {
+    val generator3 = Generator.create(100000) {
       s => {
         (s < 200000).option {
           val ss = s + 10000
@@ -110,7 +110,7 @@ To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/
 
 ```scala
 
-    val generator =  Generator.create(0) {
+    val generator = Generator.create(0) {
       s => {
         (s < 100).option {
           val ss = s + 2
@@ -135,7 +135,7 @@ To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/
 4) Specify multiple `rules of generation`, a `batch size`, a `processing function` that operates on a batch, and then call run. Here, batching along with state management is handled with in the library. 
 
 ```scala
-    val generator1: Generator[Int, Int] =  Generator.create(0) {
+    val generator1 = Generator.create(0) {
       s => {
         (s < 100).option {
           val ss = s + 1
@@ -145,7 +145,7 @@ To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/
     }
 
     // Some instances may have different rules, different starting points
-    val generator2: Generator[Int, Int] =  Generator.create(2000) {
+    val generator2 = Generator.create(2000) {
       s => {
         (s < 10000).option {
           val ss = s + 100
@@ -155,7 +155,7 @@ To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/
     }
 
     // Some instances may have different rules, different starting points
-    val generator3: Generator[Int, Int] =  Generator.create(100000) {
+    val generator3 = Generator.create(100000) {
       s => {
         (s < 200000).option {
           val ss = s + 10000
