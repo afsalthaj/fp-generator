@@ -12,7 +12,7 @@ Sometimes, as a user, we would like to specify the `rule for data generation` ba
 
 To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/examples).
 
-## Library does:
+## Library aims at the following:
 1) User should be able to specify a `rule for data generation` as a simple function, a `processing function` that and then call run!
 2) User should be able to specify multiple `rule for data generation`, the `processing function`, and then call run. This should generate all the instances of data having multiple rules (ex; different termination condition) interleaved with each other.
 3) User should be able to specify one/multiple `rules of generation`, specify a `batch size`, a `processing function` that operates on a batch, and then call run. Here, batching along with state management is handled with in the library. 
