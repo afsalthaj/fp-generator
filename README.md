@@ -4,7 +4,7 @@ A light weight functional programming abstraction to make your a bit more easy w
 # Why a library for data generation?
 As a user, we need to specify only the `rule for data generation`, and the `processing function` that is to be done on each instance of data. 
 
-* `rule for data generation` is `given a previous state, what is the new state and value`
+* `rule for data generation` is `given a previous state, what is the new state and value, and the termination condition if any`.
 
 * `processing function` is `f` that will be executed on each instance of data (or a batch of data, more on this below)
 
