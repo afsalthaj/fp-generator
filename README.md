@@ -1,5 +1,5 @@
 # fp-generator
-A light weight functional programming abstraction for better handling of data generation usecases that may involve state and batching.
+A light weight functional programming abstraction for better handling of data generation usecases that may involve state and batching without memory loads.
 
 # Why a library for data generation?
 As a user, we need to specify only the `rule for data generation`, and the `processing function` that is to be done on each instance of data. 
