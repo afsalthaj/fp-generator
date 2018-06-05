@@ -1,62 +1,96 @@
 package com.thaj.generator
 
-import scalaz.{EitherT, Monad, \/}
+import cats.effect.Effect
+import com.thaj.generator.fs2stream.Fs2PublisherSubscriber
+
+import scalaz.{-\/, EitherT, Monad, \/}
 import scalaz.syntax.either._
-import scalaz.syntax.monad._
+import fs2.{Stream, async}
+import fs2.async.mutable.Topic
+import scala.concurrent.ExecutionContext
+import cats.implicits._
 
 // A very simple generator service which may look similar to State monad, but more intuitive to use
-// for any data generation with nextValue as an optional state and value,
-// and the initial value of state being a primary object in the algebra.
-// Sorry if a library exists - learning it is equivalent in time to building this!
+// for any data generation that involves state.
+// This enables the users of the library to focus only on data generation rules and not the
+// mechanisms of batching batching (for processing data as a batch) and corresponding state management.
+// Refer to examples on usage.
 trait Generator[S, A] { self =>
+  def zero: S
   def next: S => Option[(S, A)]
   // In this way you can start with a generator service for a single component and chain across
   def map[B](f: A => B): Generator[S, B] = {
     new Generator[S, B] {
       override def next: S => Option[(S,B)] =
         self.next(_).map { case (s, a) => (s, f(a)) }
+      override def zero: S = self.zero
     }
   }
 
-  def flatMap[B](f: A => Generator[S, B]): Generator[S, B] =
+  def >>=[B](f: A => Generator[S, B]): Generator[S, B] =
     new Generator[S, B] {
       override def next: S => Option[(S, B)] = s => {
         val ss: Option[(S, A)] = self.next(s)
         ss.flatMap(t => f(t._2).next(t._1))
       }
+      override def zero: S = self.zero
     }
 
   def map2[B, C](b: Generator[S, B])(f: (A, B) => C): Generator[S, C] =
-    self.flatMap(bb => b.map(cc => f(bb, cc)))
+    self >>= (bb => b.map(cc => f(bb, cc)))
 
-  // Ex: GeneratorService[A, B].run(1000)(a => sendEventHub(a).map(_ => log("sent data"))(identity)
-  def run[F[_]: Monad, E](delay: Long)(sideEffect: A => F[E \/ Unit])(implicit m: Zero[S]): F[\/[E, Unit]] =
-    Generator.unfoldM(m.zero)(delay)(this.next)(sideEffect)
+  def asBatch(n: Int): Generator[S, List[A]] =
+    Generator.sequence[S, A](List.fill(n)(self))
+
+  @deprecated
+  def run[F[_]: Monad, E](delay: Long)(sideEffect: A => F[E \/ Unit]): F[\/[E, Unit]] =
+    Generator.unfoldM(self.zero)(delay)(this.next)(sideEffect)
 }
 
-object Generator {
-  def apply[A, B](implicit instance: Generator[A, B]): Generator[A, B] =
-    instance
+object Generator { self =>
+  def create[S, A](z: => S)(f: S => Option[(S, A)]) = new Generator[S, A] {
+    override def next: (S) => Option[(S, A)] = f
+    override def zero: S = z
+  }
 
-  def unit[State, A](a: => A): Generator[State, A] =
-    new Generator[State, A] {
-      override def next: State => Option[(State, A)] =
-        s => Some((s, a))
+  def sharedTopicStream[F[_]: Effect, A](initial: A)(implicit ec: ExecutionContext): Stream[F, Topic[F, A]] =
+    Stream.eval(async.topic[F, A](initial))
+
+  def addPublisher[F[_], A](topic: Topic[F, A], value: A): Stream[F, Unit] =
+    Stream.emit(value).covary[F].repeat.to(topic.publish)
+
+  // TODO; get rid of dead code initialisation
+  private[generator] def sequence[S, A](list: List[Generator[S, A]]): Generator[S, List[A]] = {
+    object Err extends Exception("This is dead code, and won't be executed")
+    list.foldLeft(create[S, List[A]](throw Err)(s => Some(s, List())))((acc, a) => a.map2(acc)(_ :: _))
+  }
+
+  private[generator] def asFs2Stream[F[_]: Effect, S, A](z: S)(f: S => Option[(S, A)]): Stream[F, A] =
+    f(z).fold(
+      Stream.empty.covaryAll[F, A]
+    ) {
+      case (state, value) =>
+        Stream.eval[F, A](value.pure[F]) ++ asFs2Stream[F, S, A](state)(f)
     }
 
-  // multiple generator services of S -> A , can be converted to S -> List[A] allowing you
-  // to do things like batch insert.
-  def sequence[S, A](list: List[Generator[S, A]]): Generator[S, List[A]] =
-    list.foldLeft(Generator.unit[S, List[A]](List[A]()))((acc, a) => a.map2(acc)(_ :: _))
+  def runBatch[F[_]: Effect, S, A](n: Int, gens: Generator[S, A]*)(f: List[A] => F[Unit]): F[Unit] =
+    Fs2PublisherSubscriber.withTopic[F, List[A]](
+      gens.map(_.asBatch(n).asFs2Stream[F]).reduce(_ interleaveAll _), f
+    ).compile.drain
 
-  // A seamless finite/infinite data gen
-  private def unfoldM[F[_]: Monad, S, A, E](z: S)(delay: Long)(f: S => Option[(S, A)])(sideEffect: A => F[E \/ Unit]): F[E \/ Unit] = {
+  def run[F[_]: Effect, S, A](gens: Generator[S, A]*)(f: A => F[Unit]): F[Unit] =
+    Fs2PublisherSubscriber.withTopic[F, A](
+      gens.map(t => Generator.asFs2Stream[F, S, A](t.zero)(t.next)).reduce(_ interleaveAll _), f
+    ).compile.drain
+
+  @deprecated
+  private[generator] def unfoldM[F[_]: Monad, S, A, E](z: S)(delay: Long)(f: S => Option[(S, A)])(sideEffect: A => F[E \/ Unit]): F[E \/ Unit] = {
     f(z).fold(
-      println("Finished sending the data!").right[E].pure[F]
+      scalaz.Applicative[F].pure(println("Finished sending the data!").right[E])
     ) {
       case (state, value) =>
         EitherT(sideEffect(value)).foldM(
-          _.left[Unit].pure[F],
+         t => scalaz.Applicative[F].pure(t.left[Unit]),
           _ => {
             // Haha, who cares!
             Thread.sleep(delay)
@@ -64,5 +98,9 @@ object Generator {
           }
         )
     }
+  }
+
+  implicit class GeneratorOps[S, A](x: Generator[S, A]) {
+    def asFs2Stream[F[_]: Effect]: Stream[F, A] = self.asFs2Stream[F, S, A](x.zero)(x.next)
   }
 }
