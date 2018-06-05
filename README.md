@@ -17,4 +17,6 @@ To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/
 2) User should be able to specify multiple `rule for data generation`, the `processing function`, and then call run. This should generate all the instances of data having multiple rules (ex; different termination condition) interleaved with each other.
 3) User should be able to specify one/multiple `rules of generation`, specify a `batch size`, a `processing function` that operates on a batch, and then call run. Here, batching along with state management is handled with in the library. 
 
+All without performance/memory issues.
+
 Please refer to examples to have a better understanding.
