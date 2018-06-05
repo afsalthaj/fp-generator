@@ -47,7 +47,6 @@ To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/
 
 ```scala
 
-// Our generator is as simple as specifying a zero val and the state changes
     val generator1 = Generator.create(0) {
       s => {
         (s < 100).option {
@@ -57,7 +56,6 @@ To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/
       }
     }
 
-    // Some instances may have different rules, different starting points
     val generator2 = Generator.create(2000) {
       s => {
         (s < 10000).option {
@@ -67,7 +65,6 @@ To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/
       }
     }
 
-    // Some instances may have different rules, different starting points
     val generator3 = Generator.create(100000) {
       s => {
         (s < 200000).option {
@@ -119,8 +116,7 @@ To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/
       }
     }
 
-    // Generate data based on the above rule, and internally it batches the data.
-    // All we need to do is pass the batch size, generator and the action that is to be done on each batch.
+
     Generator.runBatch[IO, Int, Int](10, generator)(list => IO { println(list) }).unsafeRunSync()
     
     // output
@@ -144,7 +140,6 @@ To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/
       }
     }
 
-    // Some instances may have different rules, different starting points
     val generator2 = Generator.create(2000) {
       s => {
         (s < 10000).option {
@@ -154,7 +149,6 @@ To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/
       }
     }
 
-    // Some instances may have different rules, different starting points
     val generator3 = Generator.create(100000) {
       s => {
         (s < 200000).option {
