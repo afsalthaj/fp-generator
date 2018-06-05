@@ -1,4 +1,4 @@
-# fp-generator -
+# fp-generator
 A light weight functional programming abstraction to make your a bit more easy with recursive data generation involving state and batching.
 
 # Why a library for data generation?
