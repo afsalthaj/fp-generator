@@ -1,7 +1,7 @@
 # fp-generator
 A light weight functional programming abstraction for better handling of data generation usecases that may involve state and batching, along with less memory loads.
 
-# Why a library for data generation?
+# Why an abstraction for data generation?
 As a user, we need to specify only the `rule for data generation`, and the `processing function` that is to be done on each instance of data. 
 
 * `rule for data generation` is `given a previous state, what is the new state and value, and the termination condition if any`.
@@ -12,7 +12,7 @@ Sometimes, as a user, we would like to specify the `rule for data generation` ba
 
 To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/examples).
 
-## Library aims at the following:
+## The abstraction aims at the following:
 1) User should be able to specify a `rule for data generation` as a simple function, a `processing function`  and then call run!
 2) User should be able to specify multiple `rule for data generation`, the `processing function`, and then call run. This should generate all the instances of data each having its own termination condition or logic of generation interleaved with each other.
 3) User should be able to specify one/multiple `rules of generation`, specify a `batch size`, a `processing function` that operates on a batch, and then call run. Here, batching along with state management is handled with in the library. 
