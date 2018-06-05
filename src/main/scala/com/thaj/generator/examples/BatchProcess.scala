@@ -20,6 +20,6 @@ object BatchProcess {
 
     // Generate data based on the above rule, and internally it batches the data.
     // All we need to do is pass the batch size, generator and the action that is to be done on each batch.
-    Generator.runBatch[IO, Int, Int](10, generator, generator, generator)(list => IO { println(list) }).unsafeRunSync()
+    Generator.runBatch[IO, Int, Int](10, generator)(list => IO { println(list) }).unsafeRunSync()
   }
 }

@@ -13,9 +13,183 @@ Sometimes, as a user, we would like to specify the `rule for data generation` ba
 To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/examples).
 
 ## The abstraction aims at the following:
-1) User should be able to specify a `rule for data generation` as a simple function, a `processing function`  and then call run!
-2) User should be able to specify multiple `rule for data generation`, the `processing function`, and then call run. This should generate all the instances of data each having its own termination condition or logic of generation interleaved with each other.
-3) User should be able to specify one/multiple `rules of generation`, specify a `batch size`, a `processing function` that operates on a batch, and then call run. Here, batching along with state management is handled with in the library. 
+1) Specify a `rule for data generation` as a simple function, a `processing function`  and then call run!
+
+```scala
+
+  val generator =  Generator.create(0) {
+    s => 
+      if (s > 100)
+        Some (s + 1, s + 1)
+      else 
+        None
+  }
+  
+  Generator.run[IO, Int, Int](generator){
+    a => IO { println (a) }
+  }.unsafeRunSync()
+  
+  // output
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+  10
+
+```
+
+2) Specify multiple `rule for data generation`, the `processing function`, and then call run. This should generate all the instances of data each having its own termination condition or logic of generation interleaved with each other.
+
+```scala
+
+// Our generator is as simple as specifying a zero val and the state changes
+    val generator1: Generator[Int, Int] =  Generator.create(0) {
+      s => {
+        (s < 100).option {
+          val ss = s + 1
+          (ss, ss)
+        }
+      }
+    }
+
+    // Some instances may have different rules, different starting points
+    val generator2: Generator[Int, Int] =  Generator.create(2000) {
+      s => {
+        (s < 10000).option {
+          val ss = s + 100
+          (ss, ss)
+        }
+      }
+    }
+
+    // Some instances may have different rules, different starting points
+    val generator3: Generator[Int, Int] =  Generator.create(100000) {
+      s => {
+        (s < 200000).option {
+          val ss = s + 10000
+          (ss, ss)
+        }
+      }
+    }
+
+    Generator.run[IO, Int, Int](generator1, generator2, generator3)(a => IO { println(a) }).unsafeRunSync()
+    
+    // output
+    1
+    110000
+    2100
+    120000
+    2
+    130000
+    2200
+    140000
+    3
+    150000
+    2300
+    160000
+    4
+    170000
+    2400
+    180000
+    5
+    190000
+    2500
+    200000
+    6
+    2600
+    7
+    2700
+```
+
+3) Specify a `rule of data generation`, specify a `batch size`, a `processing function` that operates on a batch, and then call run. Here, batching along with state management is handled with in the library. 
+
+```scala
+
+    val generator =  Generator.create(0) {
+      s => {
+        (s < 100).option {
+          val ss = s + 2
+          (ss, ss)
+        }
+      }
+    }
+
+    // Generate data based on the above rule, and internally it batches the data.
+    // All we need to do is pass the batch size, generator and the action that is to be done on each batch.
+    Generator.runBatch[IO, Int, Int](10, generator)(list => IO { println(list) }).unsafeRunSync()
+    
+    // output
+    List(2, 4, 6, 8, 10, 12, 14, 16, 18, 20)
+    List(22, 24, 26, 28, 30, 32, 34, 36, 38, 40)
+    List(42, 44, 46, 48, 50, 52, 54, 56, 58, 60)
+    List(62, 64, 66, 68, 70, 72, 74, 76, 78, 80)
+    List(82, 84, 86, 88, 90, 92, 94, 96, 98, 100)
+
+```
+
+4) Specify multiple `rules of generation`, a `batch size`, a `processing function` that operates on a batch, and then call run. Here, batching along with state management is handled with in the library. 
+
+```scala
+    val generator1: Generator[Int, Int] =  Generator.create(0) {
+      s => {
+        (s < 100).option {
+          val ss = s + 1
+          (ss, ss)
+        }
+      }
+    }
+
+    // Some instances may have different rules, different starting points
+    val generator2: Generator[Int, Int] =  Generator.create(2000) {
+      s => {
+        (s < 10000).option {
+          val ss = s + 100
+          (ss, ss)
+        }
+      }
+    }
+
+    // Some instances may have different rules, different starting points
+    val generator3: Generator[Int, Int] =  Generator.create(100000) {
+      s => {
+        (s < 200000).option {
+          val ss = s + 10000
+          (ss, ss)
+        }
+      }
+    }
+
+    Generator.runBatch[IO, Int, Int](10, generator1, generator2, generator3)(list => IO { println(list) }).unsafeRunSync()
+    
+    
+    // output
+    List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    List(110000, 120000, 130000, 140000, 150000, 160000, 170000, 180000, 190000, 200000)
+    List(2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000)
+    List(11, 12, 13, 14, 15, 16, 17, 18, 19, 20)
+    List(3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000)
+    List(21, 22, 23, 24, 25, 26, 27, 28, 29, 30)
+    List(4100, 4200, 4300, 4400, 4500, 4600, 4700, 4800, 4900, 5000)
+    List(31, 32, 33, 34, 35, 36, 37, 38, 39, 40)
+    List(5100, 5200, 5300, 5400, 5500, 5600, 5700, 5800, 5900, 6000)
+    List(41, 42, 43, 44, 45, 46, 47, 48, 49, 50)
+    List(6100, 6200, 6300, 6400, 6500, 6600, 6700, 6800, 6900, 7000)
+    List(51, 52, 53, 54, 55, 56, 57, 58, 59, 60)
+    List(7100, 7200, 7300, 7400, 7500, 7600, 7700, 7800, 7900, 8000)
+    List(61, 62, 63, 64, 65, 66, 67, 68, 69, 70)
+    List(8100, 8200, 8300, 8400, 8500, 8600, 8700, 8800, 8900, 9000)
+    List(71, 72, 73, 74, 75, 76, 77, 78, 79, 80)
+    List(9100, 9200, 9300, 9400, 9500, 9600, 9700, 9800, 9900, 10000)
+    List(81, 82, 83, 84, 85, 86, 87, 88, 89, 90)
+    List(91, 92, 93, 94, 95, 96, 97, 98, 99, 100)
+    ...
+
+```
 
 All without performance/memory issues.
 

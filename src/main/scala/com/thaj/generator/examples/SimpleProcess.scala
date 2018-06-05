@@ -10,7 +10,7 @@ object SimpleProcess {
     // Our generator is as simple as specifying a zero val and the state changes
     val generator: Generator[Int, Int] =  Generator.create(0) {
       s => {
-        (s < 100).option {
+        (s < 10).option {
           val ss = s + 1
           (ss, ss)
         }
