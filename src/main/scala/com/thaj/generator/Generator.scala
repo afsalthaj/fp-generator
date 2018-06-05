@@ -53,7 +53,7 @@ object Generator { self =>
     override def zero: S = z
   }
 
-  def sharedTopicStream[F[_]: Effect, A](initial: A)(implicit ec: ExecutionContext): Stream[F, Topic[F, A]] =
+  private[generator] def sharedTopicStream[F[_]: Effect, A](initial: A)(implicit ec: ExecutionContext): Stream[F, Topic[F, A]] =
     Stream.eval(async.topic[F, A](initial))
 
   def addPublisher[F[_], A](topic: Topic[F, A], value: A): Stream[F, Unit] =
