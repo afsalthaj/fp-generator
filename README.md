@@ -186,5 +186,3 @@ To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/
 ```
 
 All without performance/memory issues.
-
-Please refer to examples to have a better understanding.
