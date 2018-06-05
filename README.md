@@ -6,7 +6,7 @@ As a user, we need to specify only the `rule for data generation`, and the `proc
 
 * `rule for data generation` is `given a previous state, what is the new state and value, and the termination condition if any`.
 
-* `processing function` is `f` that will be executed on each instance of data (or a batch of data, more on this below)
+* `processing function` is a function `f` that will be executed on each instance of data (or a batch of data, more on this below)
 
 Sometimes, as a user, we would like to specify the `rule for data generation` based on a single instance (given a single previous instance of x, how to get a single instance of y), but the `process function` works only with batches. Sometimes, you prefer batching for performance reasons. Batching a data that involves state is trivial to build using simple `scala List`. However, if we consider avoiding out of memory exceptions and performance/concurrency, we should end up relying on streams, and this along with effects in functional programming can make things a bit more non-trivial, not allowing the user to focus on only the logic of generation, i.e, we end up writing more than just `rule for data generation` and `processing function`.
 
