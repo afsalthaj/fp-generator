@@ -1,5 +1,5 @@
 # fp-generator
-A simple light weight FP abstraction for stateful data generatio and processing of data, that may involve stateful batching, along with potential memory overloads.
+A simple light weight FP abstraction for stateful data generation and asynchronous processing of data, that may involve stateful batching, along with potential memory overloads.
 
 # Why an abstraction for data generation?
 As a user, we need to specify only the `rule for data generation`, and the `processing function` that is to be done on each instance of data. 
