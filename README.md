@@ -193,4 +193,4 @@ To see the working usages, please refer to [examples](src/main/scala/com/thaj/ge
 All without performance/memory issues, while processing with max concurrency.
 
 ## TODO
-The delay in data generation can be currently incorporated using `Thread.sleep` with in the generator function. This implies the sleep time is used by other threads of data generation + processing concurrently. While this is not a idiomatic way when talking to a library, we are working on accepting delay as a parameter within the abstraction.
+The delay in data generation can be currently incorporated using `Thread.sleep` with in the generator function. This implies the sleep time is used by other threads of data generation + processing concurrently. While this is not an idiomatic way when talking to a library, we are working on accepting delay as a parameter within the abstraction.
