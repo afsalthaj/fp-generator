@@ -1,5 +1,5 @@
 # fp-generator
-A simple light weight FP abstraction for stateful data generation and asynchronous processing of data, that may need stateful batching, and involve potential memory overloads.
+A simple light weight FP abstraction for stateful data generation and asynchronous & concurrent processing of data, that may need stateful batching, and involve potential memory overloads.
 
 # Why an abstraction for a simple data generation?
 Data generation sounds trivial but many times we end up writing more than just data generation. A change in logic is more or less cumbersome in any application code/script that generates data. In simple terms, the abstraction allows you to focus only on the logic of a data generation and forget about the mechanical coding that is needed to make things work.
@@ -10,10 +10,10 @@ As a user, we need to specify only the `rule for data generation`, and the `proc
 
 * `processing function` is a function `f` that will be executed on each instance of data (or a batch of data, more on this below)
 
-Sometimes we would like to specify the `rule for data generation` based on a single instance (given a single previous instance of x, how to get a single instance of y), but the `process function` may work only with batches (probably an external API function to send data to an external system such as Kafka, or eventhub). We may also intentionally prefer batch processes for performance reasons too. Batching a data is trivial to build using simple `scala.collection.Seq`. However, if we consider avoiding `out of memory exceptions` + `performance/concurrency`, we will end up relying on streams, and this along with batching with state transitions, and effects in functional programming can make things a bit more non-trivial. In short, we end up writing more code than specifying the `rule for data generation` and `processing function` to get some trivial data generation and processing done. 
+Sometimes we would like to specify the `rule for data generation` based on a single instance (given a single previous instance of x, how to get a single instance of y), but the `process function` may work only with batches (probably an external API function to send data to an external system such as Kafka, or eventhub). We may also intentionally prefer batch processes for performance reasons too. Batching a data is trivial to build using simple `scala.collection.Seq`. However, if we consider avoiding `out of memory exceptions` + `performance` + `concurrency`, we will end up relying on streams, and this along with batching with state transitions, and effects in functional programming can make things a bit more non-trivial. In short, we end up writing more code using libraries such as `fs2` than specifying the `rule for data generation` and `processing function` to get some trivial data generation and processing done. 
 
 ## Internals (optional read)
-In fact, as you may guess, the core of the abstraction is nothing but a state transition function, **`f: S => Option(S, A)`** along with an initial state (zero) of type `S`, with a few primitives and combinators on its own, nicely combined with other combinators in **fs2 (with cats)**, allowing you to focus only on generation logic at the client site. While the generator function looks similar to the **state monad**, this one is more specific to our use case with a zero value and an optional next value, making the termination condition a first class citizen. It is worth noting that, internally, the **`generation of data` and `processing of generated data` are two decoupled processes allowing them to execute concurrently**.
+In fact, as you may guess, the core of the abstraction is nothing but a state transition function, **`f: S => Option(S, A)`** along with an initial state (zero) of type `S`, with a few primitives and combinators on its own, nicely combined with other combinators in **fs2 (with cats)**, allowing you to focus only on generation logic at the client site. While the generator function looks similar to the **state monad**, this one is more specific to our use case with a zero value and an optional next value, making the termination condition a first class citizen. It is worth noting that, internally, the **`generation of data` and `processing of generated data` are two decoupled processes allowing them to execute concurrently**. The `concurrency` bit is fully relied on `fs2`, but `fs2` being a library with a significant surface area, abstracting out the concurrency nuances of fs2 makes sense too.
 
 To see the working usages, please refer to [examples](src/main/scala/com/thaj/generator/examples).
 
@@ -190,4 +190,7 @@ To see the working usages, please refer to [examples](src/main/scala/com/thaj/ge
 
 ```
 
-All without performance/memory issues.
+All without performance/memory issues, while processing with max concurrency.
+
+## TODO
+The delay in data generation can be currently incorporated using `Thread.sleep` with in the generator function. This implies the sleep time is used by other threads of data generation + processing concurrently. While this is not an idiomatic way when talking to a library, we are working on accepting delay as a parameter within the abstraction.
