@@ -1,18 +1,23 @@
 # fp-generator
-A light weight functional programming abstraction for better handling of data generation usecases that may involve state and batching, along with less memory loads.
+A simple light weight FP abstraction for stateful data generation and asynchronous processing of data, that may need stateful batching, and involve potential memory overloads.
 
-# Why an abstraction for data generation?
+# Why an abstraction for a simple data generation?
+Data generation sounds trivial but many times we end up writing more than just data generation. A change in logic is more or less cumbersome in any application code/script that generates data. In simple terms, the abstraction allows you to focus only on the logic of a data generation and forget about the mechanical coding that is needed to make things work.
+
 As a user, we need to specify only the `rule for data generation`, and the `processing function` that is to be done on each instance of data. 
 
 * `rule for data generation` is `given a previous state, what is the new state and value, and the termination condition if any`.
 
 * `processing function` is a function `f` that will be executed on each instance of data (or a batch of data, more on this below)
 
-Sometimes, as a user, we would like to specify the `rule for data generation` based on a single instance (given a single previous instance of x, how to get a single instance of y), but the `process function` works only with batches. Sometimes, you prefer batching for performance reasons. Batching a data that involves state is trivial to build using simple `scala List`. However, if we consider avoiding out of memory exceptions and performance/concurrency, we should end up relying on streams, and this along with effects in functional programming can make things a bit more non-trivial, not allowing the user to focus on only the logic of generation, i.e, we end up writing more than just `rule for data generation` and `processing function`.
+Sometimes we would like to specify the `rule for data generation` based on a single instance (given a single previous instance of x, how to get a single instance of y), but the `process function` may work only with batches (probably an external API function to send data to an external system such as Kafka, or eventhub). We may also intentionally prefer batch processes for performance reasons too. Batching a data is trivial to build using simple `scala.collection.Seq`. However, if we consider avoiding `out of memory exceptions` + `performance/concurrency`, we will end up relying on streams, and this along with batching with state transitions, and effects in functional programming can make things a bit more non-trivial. In short, we end up writing more code than specifying the `rule for data generation` and `processing function` to get some trivial data generation and processing done. 
 
-To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/examples).
+## Internals (optional read)
+In fact, as you may guess, the core of the abstraction is nothing but a state transition function, **`f: S => Option(S, A)`** along with an initial state (zero) of type `S`, with a few primitives and combinators on its own, nicely combined with other combinators in **fs2 (with cats)**, allowing you to focus only on generation logic at the client site. While the generator function looks similar to the **state monad**, this one is more specific to our use case with a zero value and an optional next value, making the termination condition a first class citizen. It is worth noting that, internally, the **`generation of data` and `processing of generated data` are two decoupled processes allowing them to execute concurrently**.
 
-## The abstraction aims at the following:
+To see the working usages, please refer to [examples](src/main/scala/com/thaj/generator/examples).
+
+## Examples:
 1) Specify a `rule for data generation` as a simple function, a `processing function` (using `println` here for demo purpose. In real this could be sending data to external systems in an effect IO)  and then call run!
 
 ```scala
