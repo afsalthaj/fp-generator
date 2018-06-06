@@ -2,7 +2,7 @@
 A simple light weight FP abstraction for stateful data generation and asynchronous processing of data, that may need stateful batching, and involve potential memory overloads.
 
 # Why an abstraction for a simple data generation?
-Data generation sounds trivial but many times we end up writing more than just data generation. A change in logic is more or less cumbersome in any application code/script that generates data. In simple terms, the abstraction allows you to focus only on the logic of a data generation that involves state transition (state monad?)
+Data generation sounds trivial but many times we end up writing more than just data generation. A change in logic is more or less cumbersome in any application code/script that generates data. In simple terms, the abstraction allows you to focus only on the logic of a data generation and forget about the mechanical coding that is needed to make things work.
 
 As a user, we need to specify only the `rule for data generation`, and the `processing function` that is to be done on each instance of data. 
 
