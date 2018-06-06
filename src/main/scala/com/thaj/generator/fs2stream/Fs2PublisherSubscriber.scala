@@ -11,8 +11,7 @@ trait Fs2PublisherSubscriber {
     def topicStream(head: A): Stream[F, Topic[F, A]] = Stream.eval(fs2.async.topic[F, A](head))
     stream.head.flatMap {
       topicStream(_).flatMap { topic =>
-        val publisher: Stream[F, Unit] = stream.to(topic.publish)
-
+        val publisher: Stream[F, Unit] = stream.tail.to(topic.publish)
         val subscriber: Stream[F, Unit] = topic.subscribe(10).flatMap(t => Stream.eval[F, Unit](f(t)))
 
         subscriber.concurrently(publisher)

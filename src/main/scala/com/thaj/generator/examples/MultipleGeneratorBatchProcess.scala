@@ -7,8 +7,6 @@ import scalaz.syntax.std.boolean._
 object MultipleGeneratorBatchProcess {
   def main(args: Array[String]): Unit = {
 
-    // Our generator is as simple as specifying a zero val and the state changes
-    // Here the state is `Int` and the value is also `Int` for simplicity purpose.
     val generator1: Generator[Int, Int] =  Generator.create(0) {
       s => {
         (s < 100).option {
@@ -18,9 +16,12 @@ object MultipleGeneratorBatchProcess {
       }
     }
 
-    // Some instances may have different rules, different starting points
+    // Note that the thread.sleep(100) when batching with an `n` results in a delay n*100.
+    // In this case, the n is 10, then we have a delay of 1000ms between each element in generator2
+    // while threads for other generators will keep running.
     val generator2: Generator[Int, Int] =  Generator.create(2000) {
       s => {
+        Thread.sleep(100)
         (s < 10000).option {
           val ss = s + 100
           (ss, ss)
@@ -32,16 +33,13 @@ object MultipleGeneratorBatchProcess {
     val generator3: Generator[Int, Int] =  Generator.create(100000) {
       s => {
         (s < 200000).option {
-          val ss = s + 10000
+          val ss = s + 100
           (ss, ss)
         }
       }
     }
 
-    // Now we use all these generators to generate data batch by batch.
-    // The batching  and the state management of each batch and across the batch is done
-    // internally. The batches are interleaved with each other through fs2 combinators under the hood.
-    // All we need to do is, pass all the generators to runBatch method, and the effect to be done on each batch of data
+   // Thread.sleep(1000) for generator2 results in the some of the results of generator2 to be the last one to stdout
     Generator.runBatch[IO, Int, Int](10, generator1, generator2, generator3)(list => IO { println(list) }).unsafeRunSync()
   }
 }

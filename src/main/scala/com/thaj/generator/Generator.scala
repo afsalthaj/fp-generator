@@ -9,6 +9,8 @@ import fs2.{Stream, async}
 import fs2.async.mutable.Topic
 import scala.concurrent.ExecutionContext
 import cats.implicits._
+import scala.concurrent.ExecutionContext.Implicits.global
+
 
 // A very simple generator service which may look similar to State monad, but more intuitive to use
 // for any data generation that involves state.
@@ -53,7 +55,7 @@ object Generator { self =>
     override def zero: S = z
   }
 
-  private[generator] def sharedTopicStream[F[_]: Effect, A](initial: A)(implicit ec: ExecutionContext): Stream[F, Topic[F, A]] =
+  private[generator] def sharedTopicStream[F[_]: Effect, A](initial: A): Stream[F, Topic[F, A]] =
     Stream.eval(async.topic[F, A](initial))
 
   def addPublisher[F[_], A](topic: Topic[F, A], value: A): Stream[F, Unit] =
@@ -65,22 +67,23 @@ object Generator { self =>
     list.foldLeft(create[S, List[A]](throw Err)(s => Some(s, List())))((acc, a) => a.map2(acc)(_ :: _))
   }
 
-  private[generator] def asFs2Stream[F[_]: Effect, S, A](z: S)(f: S => Option[(S, A)]): Stream[F, A] =
-    f(z).fold(
+  private[generator] def asFs2Stream[F[_], S, A](z: S)(f: S => Option[(S, A)])(implicit F: Effect[F]): Stream[F, A] = {
+    Stream.eval[F, Option[(S, A)]](F.delay { f(z) }).flatMap(_.fold(
       Stream.empty.covaryAll[F, A]
-    ) {
+    ){
       case (state, value) =>
         Stream.eval[F, A](value.pure[F]) ++ asFs2Stream[F, S, A](state)(f)
-    }
+    })
+  }
 
   def runBatch[F[_]: Effect, S, A](n: Int, gens: Generator[S, A]*)(f: List[A] => F[Unit]): F[Unit] =
     Fs2PublisherSubscriber.withTopic[F, List[A]](
-      gens.map(_.asBatch(n).asFs2Stream[F]).reduce(_ interleaveAll _), f
+      gens.map(_.asBatch(n).asFs2Stream[F]).reduce(_ merge _), f
     ).compile.drain
 
   def run[F[_]: Effect, S, A](gens: Generator[S, A]*)(f: A => F[Unit]): F[Unit] =
     Fs2PublisherSubscriber.withTopic[F, A](
-      gens.map(t => Generator.asFs2Stream[F, S, A](t.zero)(t.next)).reduce(_ interleaveAll _), f
+      gens.map(t => Generator.asFs2Stream[F, S, A](t.zero)(t.next)).reduce(_ merge _), f
     ).compile.drain
 
   @deprecated
