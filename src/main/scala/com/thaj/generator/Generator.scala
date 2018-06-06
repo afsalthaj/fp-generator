@@ -29,6 +29,9 @@ trait Generator[S, A] { self =>
     }
   }
 
+  def flatMap[B](f: A => Generator[S, B]): Generator[S, B] =
+    >>=(f)
+
   def >>=[B](f: A => Generator[S, B]): Generator[S, B] =
     new Generator[S, B] {
       override def next: S => Option[(S, B)] = s => {
