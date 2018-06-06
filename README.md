@@ -12,9 +12,9 @@ Sometimes we would like to specify the `rule for data generation` based on a sin
 
 In fact, as you may guess, the core of the abstraction is nothing but a state transition function, `f: S => Option(S, A)` along with an initial state (zero) of type `S`, with a few primitives and combinators on its own, nicely combined with other combinators in fs2 (with cats), allowing you to focus only on generation logic at the client site. While the generator function looks similar to the state monad, this one is more specific to our use case with a zero value and an optional next value, making the termination condition a first class citizen. Also, internally, the generation of data and processing of generated data are two decoupled processes allowing them to execute concurrently.
 
-To see the usages, please refer to [examples](src/main/scala/com/thaj/generator/examples).
+To see the working usages, please refer to [examples](src/main/scala/com/thaj/generator/examples).
 
-## The abstraction aims at the following:
+## Examples:
 1) Specify a `rule for data generation` as a simple function, a `processing function` (using `println` here for demo purpose. In real this could be sending data to external systems in an effect IO)  and then call run!
 
 ```scala
