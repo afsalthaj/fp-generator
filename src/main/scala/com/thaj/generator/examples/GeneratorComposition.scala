@@ -14,7 +14,7 @@ object GeneratorComposition {
   val number = new java.util.concurrent.atomic.AtomicLong(0)
 
   def main(args: Array[String]): Unit = {
-    val generator1: Generator[Int, Int] =  Generator.create(0) {
+    val generator1: Generator[Int, Int] =  Generator.create {
       s => {
         (s < 30).option {
           val ss = s + 1
@@ -23,7 +23,7 @@ object GeneratorComposition {
       }
     }
 
-    val generator2: Generator[Int, Int] =  Generator.create(2) {
+    val generator2: Generator[Int, Int] =  Generator.create {
       s => {
         (s < 30).option {
           val ss = s * 10
@@ -44,7 +44,7 @@ object GeneratorComposition {
     } yield y
 
     val fut =
-      Generator.run[IO, Int, Int](simpleComposedGen)(a => IO {
+      Generator.run[IO, Int, Int](simpleComposedGen.withZero(0))(a => IO {
         println(Thread.currentThread().getName + " " + a)
         number.getAndAdd(a)
       }).unsafeToFuture()
@@ -67,7 +67,7 @@ object GeneratorComposition {
     } yield y
 
     number.set(0)
-    val fut2 = Generator.run[IO, Int, Int](complexGen)(a => IO {
+    val fut2 = Generator.run[IO, Int, Int](complexGen.withZero(0))(a => IO {
       println(Thread.currentThread().getName + " " + a)
       number.getAndAdd(a)
     }).unsafeToFuture()
@@ -79,7 +79,7 @@ object GeneratorComposition {
     number.set(0)
     // Let's pass simpleComposedGen, complexGen, generator1. It should print out the numbers 110, 10, 11, 121
     // and all the numbers from 1 to 30. The number should be 110 + 10 + 11 + 121 + 30(30+1)/2
-    Generator.run[IO, Int, Int](simpleComposedGen, complexGen, generator1)(a => IO {
+    Generator.run[IO, Int, Int](simpleComposedGen.withZero(0), complexGen.withZero(0), generator1.withZero(0))(a => IO {
       println(Thread.currentThread().getName + " " + a)
       number.getAndAdd(a)
     }).unsafeToFuture()

@@ -24,5 +24,4 @@ trait Fs2PublisherSubscriber {
   }
 }
 
-// Exists to decouple generation of data and processing data as two separate concurrent process
 object Fs2PublisherSubscriber extends Fs2PublisherSubscriber
