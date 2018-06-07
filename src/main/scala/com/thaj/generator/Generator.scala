@@ -7,10 +7,8 @@ import scalaz.{-\/, EitherT, Monad, \/}
 import scalaz.syntax.either._
 import fs2.{Stream, async}
 import fs2.async.mutable.Topic
-import scala.concurrent.ExecutionContext
 import cats.implicits._
 import scala.concurrent.ExecutionContext.Implicits.global
-
 
 // A very simple generator service which may look similar to State monad, but more intuitive to use
 // for any data generation that involves state.
@@ -35,9 +33,9 @@ trait Generator[S, A] { self =>
   def >>=[B](f: A => Generator[S, B]): Generator[S, B] =
     new Generator[S, B] {
       override def next: S => Option[(S, B)] = s => {
-        val ss: Option[(S, A)] = self.next(s)
-        ss.flatMap(t => f(t._2).next(t._1))
+        self.next(s).flatMap{ case(st, v) => f(v).next(st) }
       }
+
       override def zero: S = self.zero
     }
 
@@ -80,12 +78,12 @@ object Generator { self =>
   }
 
   def runBatch[F[_]: Effect, S, A](n: Int, gens: Generator[S, A]*)(f: List[A] => F[Unit]): F[Unit] =
-    Fs2PublisherSubscriber.withTopic[F, List[A]](
+    Fs2PublisherSubscriber.withQueue[F, List[A]](
       gens.map(_.asBatch(n).asFs2Stream[F]).reduce(_ merge _), f
     ).compile.drain
 
   def run[F[_]: Effect, S, A](gens: Generator[S, A]*)(f: A => F[Unit]): F[Unit] =
-    Fs2PublisherSubscriber.withTopic[F, A](
+    Fs2PublisherSubscriber.withQueue[F, A](
       gens.map(t => Generator.asFs2Stream[F, S, A](t.zero)(t.next)).reduce(_ merge _), f
     ).compile.drain
 

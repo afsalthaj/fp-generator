@@ -21,7 +21,6 @@ object MultipleGeneratorBatchProcess {
     // while threads for other generators will keep running.
     val generator2: Generator[Int, Int] =  Generator.create(2000) {
       s => {
-        Thread.sleep(100)
         (s < 10000).option {
           val ss = s + 100
           (ss, ss)

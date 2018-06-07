@@ -1,21 +1,25 @@
 package com.thaj.generator.fs2stream
 
-import cats.effect.Effect
+import cats.effect.{Effect, IO}
 import fs2._
-import fs2.async.mutable.Topic
+import fs2.async.mutable.{Queue, Topic}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait Fs2PublisherSubscriber {
-  def withTopic[F[_], A](stream: Stream[F, A], f: A => F[Unit])(implicit F: Effect[F]): Stream[F, Unit] = {
-    def topicStream(head: A): Stream[F, Topic[F, A]] = Stream.eval(fs2.async.topic[F, A](head))
-    stream.head.flatMap {
-      topicStream(_).flatMap { topic =>
-        val publisher: Stream[F, Unit] = stream.tail.to(topic.publish)
-        val subscriber: Stream[F, Unit] = topic.subscribe(10).flatMap(t => Stream.eval[F, Unit](f(t)))
+  def enqueueData[F[_], A](q: Queue[F, A], streamData: Stream[F, A])(implicit F: Effect[F]): Stream[F, Unit] =
+    streamData.to(q.enqueue)
 
-        subscriber.concurrently(publisher)
-      }
+  def dequeueData[F[_], A](q: Queue[F, A])(implicit F: Effect[F]): Stream[F, A] = q.dequeue
+
+  def withQueue[F[_], A](stream: Stream[F, A], f: A => F[Unit])(implicit F: Effect[F]): Stream[F, Unit] = {
+    val queue: Stream[F, Queue[F, A]] = Stream.eval(async.circularBuffer[F, A](100))
+
+    queue.flatMap { q =>
+      val enqueueStream = enqueueData(q, stream)
+      val dequeStream =   dequeueData(q).evalMap(f)
+
+      dequeStream.concurrently(enqueueStream)
     }
   }
 }
