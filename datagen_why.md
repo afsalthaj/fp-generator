@@ -4,7 +4,7 @@
 
 # This is not:
 
-* This writeup isn't about managing Random types and its compositions/ `scala-check`.
+This writeup isn't about managing Random types and its compositions/ `scala-check`.
 
 ----
 # This is:
