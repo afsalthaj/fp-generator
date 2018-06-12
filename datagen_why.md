@@ -16,7 +16,7 @@
 
 
 
-## Let us define a few simple problems and try to solve each one of them, to understand what are we trying to achieve!
+## Let us define a few simple problems and try to solve each one of them, to understand what we are trying to achieve!
 
 
 ----
