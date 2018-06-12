@@ -190,7 +190,7 @@ As a side note, we used corecursion, which is a bit different to using `scan` or
 ---------
 ## Let's separate `State` from `Value`
 
-The generation depends on a previous state, and `State` type can different from `Value`
+The generation depends on a previous state, and `State` type can be different from `Value` type.
 
 ```scala
 
