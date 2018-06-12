@@ -4,9 +4,7 @@
 
 # This is not:
 
-* This writeup isn't about managing Random types and its management and compositions.
-* It isn't `scala-check` (that handles the logic of generation of data with in itself and provides functionality to control over the data, with nice combinators to compose the generation)
-
+* This writeup isn't about managing Random types and its compositions/ `scala-check`.
 
 ----
 # This is:
