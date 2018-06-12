@@ -9,8 +9,8 @@
 ----
 # This is:
 
-- The talk will be in the world of `termination conditions`, `effects`, `state of data points`, `concurrency`, `delays`, `backpressure`, `batching` and `compositions`. Essentially, why these concepts are there and how it can be handled. 
-- In nutshell, we are going to abstract out `these mechanical side of things` while you generate and process some data. 
+- World of `termination conditions`, `effects`, `state of data points`, `concurrency`, `delays`, `backpressure`, `batching` and `compositions`. 
+- In nutshell, we are going to abstract out `the mechanical side of things` while you generate and process some data. 
 
 ---
 
