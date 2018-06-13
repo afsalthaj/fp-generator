@@ -204,7 +204,7 @@ generator(0) { t => if (t > 29) None else Some((t + 1), (t + 1)) }
 ```
 
 That solved finite/infinite data generation to a certain extent. 
-[PS: Why not State Monad?](#statemonad?)
+[PS: Why not State Monad?](why_not_state_monad.md)
 
 -----
 
