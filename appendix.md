@@ -13,11 +13,6 @@ If we think we need both, why would we even want to form a state monad which doe
 * Stack safety? - There is complexity to solve it using tail recursion. We don't need heap to solve this usecase.  
 * A state with its combinators ineherently in recursive mode  and not in co-recursive mode + trampolining seems to be an overkill !
 
------
-
-
-## State doesn't always mean State monad.
-
 Once you form the `State` we still need to do something like this to generate data, giving no reasonable advantage of forming it in the first instance. 
 
 ```scala
@@ -28,6 +23,4 @@ unfold(0)(x => Some(s.run(x)))
 
 ```
 
-Well, we need to revisit this statement
-
-----
+-----
