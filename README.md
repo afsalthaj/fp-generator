@@ -365,6 +365,7 @@ As a quick fix to get things going, we used explicit enqueue and dequeue methods
 ## PS
 #### Integration with **Scalacheck**?  **fs2-scalacheck**? 
 Well I tried and bumped into several loopy codes converting `Gen` to `fs2.Stream`.  
-Well, I have this question reverberating "why would I even want to..why would I want to". May be for fun.
+But I have also got this question reverberating "why would I even want to..why would I event want to". 
+May be for fun and no much value-add! 
 
 The entire point of fp-generator is to have [granular control over your data](https://github.com/afsalthaj/fp-generator/blob/master/datagen_why.md#fp-generator-vs-scalacheck-), or in other words, the seed of generator is with in our control, and we define the next value and the termination condition... Well still not convinced? Try it yourself :)
