@@ -649,19 +649,23 @@ https://github.com/afsalthaj/fp-generator
 
 ```scala
  val generator = Generator.create[Int, Int] {
-      s =>
-        (s < 10).option {
-          val ss = s + 100
-          (ss, ss)
-        }
-    }
+   s =>
+     if (s < 10)
+       Some(s + 1, s + 1)
+     else 
+       None
+ }
     
+ // Transaction starting from 0 with transaction rate of 1 in 1 second.   
  val accountofA = generator.withZero(0).withDelay(1000)
- val accountofB = generator.map(_ + 1).withZero(100).withDelay(3000)
+ 
+ // Transaction starting from 0 with transaction rate of 1 in 3 seconds, such that value is greater than  
+ val accountofB = generator.map { _ + 1 }.withZero(0).withDelay(3000)
 
+// Generate and Process data one by one.
 Generator.run[IO, Int, Int](accountofA, accountofB)(a => IO(println(a)).unsafeRunSync()
 
-// or To batch it, with a size of 10, it is as easy as
+// Generate and Process data as a batch
 Generator.runBatch[IO, Int, Int](10, generator1, generator2)(list => IO(println(lst)).unsafeRunSync
 
 ```
