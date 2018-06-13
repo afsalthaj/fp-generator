@@ -398,7 +398,7 @@ That was easy.
 
 ## Problem 6 (Time Delays)
 
-Generate some data such that number of transactions of A is greater in a given time period is less than that of B. 
+Generate some data such that rate of number of transactions of `A` is less than that of `B`. 
 
 Both account transaction data should be simultaneous, or in other words, we still want it to be asynchronous. (Needn't batch the data for now)
 
@@ -411,7 +411,7 @@ Both account transaction data should be simultaneous, or in other words, we stil
 ```scala
 val r = generator(0)(t => { val s = t ; Some(s, s) })
 val gen1 = r.take(10).map(t => "A" + ": " + t)
-val gen2 = r.map(t => t + 10).take(10).map(t => "B" + ": " + t)
+val gen2 = r.map(t => t + 10).map(t => "B" + ": " + t)
 
 
 (gen1 ++  gen2.map {t => { Thread.sleep(4000); t } }
@@ -453,7 +453,7 @@ val gen1 = r.take(3).map(t => "A" + ": " + t)
 val gen2 = r.map(t => t + 10).take(3).map(t => "B" + ": " + t)
 
  (gen1.map{t => {Thread.sleep(1000); t} } #:::
-    gen2.map {t => {Thread.sleep(1500); t} }).take(20).foreach(t =>
+    gen2.map {t => {Thread.sleep(1500); t} }).foreach(t =>
       Future { 
         println(t + " Datetime: " + java.time.Instant.now + 
           "Thread: " + Thread.currentThread().getName) 
