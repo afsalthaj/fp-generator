@@ -554,7 +554,7 @@ Trying to define all problems and solutions is impractical here. Nevertheless, w
 
 ## Stream realising through effects - concurrency is encoded with in stream!
 
-We found it difficult to encode the fact the every element in the data generation stream may get realised through an effect - essentially a concurrency Effect `F` (let's say future). 
+We found it difficult to encode the fact that, every element in the `data generation` stream may get realised through an effect - essentially a concurrency Effect `F` (let's say future). 
 
 With `fs2.Stream[F, A]`, we get this encoding for free. It says, every element `A` in the stream may realise in a `Future` (or with any `F`) effect.
 
