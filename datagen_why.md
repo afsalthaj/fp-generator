@@ -341,7 +341,7 @@ There are more problems in our pipeline to solve:
 -------
 
 ## Problem 4 (Concurrency)
-In problem 3, we generated account transactions of A and B that are dependent on each other. However, the entire point of giving dependency is that at a point in time, the account balance of B is greater than that of A.
+In problem 3, we generated account transactions of A and B that are dependent on each other. However, the entire point of giving dependency is that, at the same point in time (or almost), the account balance of B should be greater than that of A.
 
 ---------
 
