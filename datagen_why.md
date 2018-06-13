@@ -676,7 +676,7 @@ Well, we don't need to use fp-generator if:
 * generation code doesn't involve talking to external systems during processing, and associated back-pressure handling.
 * concurrency and order of data isn't a concern at all
 
-All that you care is arbitrary instances of a `case class` and printing it out to test your function/system, then most probably [ScalaCheck] (https://github.com/rickynils/scalacheck) is the way to go!
+All that you care is arbitrary instances of a `case class` and printing it out to test your function/system, then most probably [ScalaCheck](https://github.com/rickynils/scalacheck) is the way to go!
 
 
 ---------
