@@ -211,7 +211,7 @@ That solved finite/infinite data generation to a certain extent.
 
 
 # Processing generated data.
-   --  Data generation is not just generation. It is generation  and processing
+   --  Data generation is not just generation. It is generation  and processing. Mostly, you would need to send this data to somewhere else. We will use `prinln` that represents talking to external systems. 
 
 
 
