@@ -1,9 +1,7 @@
 # fp-generator
-A simple light weight FP abstraction for data generation managing concurrency, state, batching and effects.
-Feel free to skip straight into examples in README to get a quick understanding.
+A simple light weight FP abstraction for data generation and processing with granular control of its behavior, managing state, batching, time delays, concurrency and backpressure.
 
-## Why an abstraction for data gen? (optional read)
-Data generation sounds trivial but many times we end up writing more code than the logic of data generation. In short, this abstraction allows you to focus only on the logic of a data generation and forget about the mechanical coding that is needed to make things work.
+In short, this abstraction allows you to forget about the mechanical coding that is required for any generation and processing application.
 
 Find out more information in [here](https://github.com/afsalthaj/fp-generator/blob/master/datagen_why.md)
 
