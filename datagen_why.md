@@ -277,7 +277,7 @@ Make sure that the balance of `B` has some values greater than that of `A`.
 
 ## Solution to Problem 3
 
-To solve above problem, the previous code shouldn't return `unit` or any `side effect`. Because returning `Unit` prevents composition.
+To solve above problem, the [previous code](#returningunit) shouldn't return `unit` or any `side effect`. Because returning `Unit` prevents composition.
 
 ```scala
 def generator[S, A](z: S)(f: S => Option[(S, A)]): Stream[A] =
@@ -699,5 +699,3 @@ Thank you!
 
 
 ------
-
-
