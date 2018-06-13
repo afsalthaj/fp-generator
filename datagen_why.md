@@ -524,11 +524,11 @@ Trying to define all problems and solutions is impractical here. Nevertheless, w
 -----
 
 ## We bumped into following problems essentially!
-* Concurrently **processing** account transaction of two individuals was ok, but it will get bloated once we have a dozen individuals.
+* Concurrently **processing** account transaction of two individuals was ok, but it will get bloated once we have a dozen individuals. Essentially, we lost control over the granular behavior of data.
 * Incorporating **delays** to control the generation per instance affected concurrency. 
-* Handling **batching** along with handling `state + concurrency + delays` will lead to more mechanical code with potential low level concurrency primitives.
+* Handling **batching** along with handling `state` + `concurrency` + `delays` will lead to a set of mechanical code with potential low level concurrency primitives,
 * This along with solving back pressure  leads to more and more mechanical code.
-
+* Assuming we solved everything, we still need that to be written somewhere to re-use!
 
 -----
 
