@@ -490,8 +490,8 @@ val gen2 = r.map(t => t + 10).take(3).map {
 ## Result? Back into synchronised world :(
 
 ```
-A: 1 Datetime: 2018-06-12T04:37:46.370ZT hread: scala-execution-context-global-11
-A: 2 Datetime: 2018-06-12T04:37:47.372ZT hread: scala-execution-context-global-11
+A: 1 Datetime: 2018-06-12T04:37:46.370Z Thread: scala-execution-context-global-11
+A: 2 Datetime: 2018-06-12T04:37:47.372Z Thread: scala-execution-context-global-11
 B: 11 Datetime: 2018-06-12T04:37:48.878Z Thread: scala-execution-context-global-11
 B: 12 Datetime: 2018-06-12T04:37:50.382Z Thread: scala-execution-context-global-11
 
