@@ -536,7 +536,7 @@ Trying to define all problems and solutions is impractical here. Nevertheless, w
 
 * **scala.Stream** didn't solve anything much. Ideally, we should be able to encode concurrency effect in the data generation side that could solve the concurrency issue.
 * Processing **scala.Stream** of data resulted in return type of `Unit` affecting compositonality. We need to encode the entire program with just `streams`.
-* We used scala.concurrent.Future [Future](https://gist.github.com/afsalthaj/ddfe60c06fb60eec864e0e4364f1911a)) which adds up to the issues of `scala.Stream`
+* We used scala [Future](https://gist.github.com/afsalthaj/ddfe60c06fb60eec864e0e4364f1911a) which adds up to the entire complexity with its own `eagerness` to break laws which in turn breaks reliability!
 
 
 ------------
