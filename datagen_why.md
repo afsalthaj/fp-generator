@@ -510,14 +510,14 @@ PS: Converting `gen` to `par collections (gen1.par)`  won't work either as it wo
 
 -----------
 ## Reason?
-Although **processing** of each data point is made `effectful` with `Future`, the **data generation** is still sequential. We should  make the **`data generation`** concuerrent too.
+Although **processing** of each data point is made `effectful` with `Future`, the **data generation** is still sequential. The `processing` pipeline always find the current thread to be `free` when it asks the stream to realise the next data point.
 
 --------
 
 ## More problems?
-Trying to define all problems and solutions is not practical here. However we need to atleast think about more problems before we convince ourselves that some engineering is required now.
+Trying to define all problems and solutions is impractical here. Nevertheless, we still need to think about more potential problems we may bump into, before we convince ourselves that, some sort of "engineering" is required now.
 
-* Assume that you solved the above problem of concurrency, try and resolve how that is applicable when you need to `batch` the data? (Delays between batch?, delays between each instance of batch?)
+* Assume that you solved the above problem of concurrency, try and resolve how that is applicable when you need to `batch` the data? (Delays between each batch?, delays between each data instance with in a batch?)
 * Assume you have solved the concurrency issues along with batching, try and resolve the problem of `back-pressure` -i.e, the destination service (eg: Kafka/Eventhub etc) directs you "Please slow down your generation + processing, because I am overloaded !" or "Please increase your speed, I am free!"
 
 
