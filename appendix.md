@@ -7,9 +7,8 @@
 ## Why not State Monad (scalaz.State) ?<a name = "statemonad?"></a>
 
 How do we manage:
-
+* Termination condition? - Nothing cohesive to handle it. It is S => (S, A) and not Option[(S, A)]. Well we could inject :D
 * Infinite generation? - Well it doesn't accumulate the results
-* Termination condition? - Nothing cohesive to handle it. It is S => (S, A)
 * Stack safety? - There is complexity to solve it using tail recursion.
 * We don't need heap to solve this usecase.  
 * A state with its combinators ineherently in recursive mode  and not in co-recursive mode + trampolining seems to be an overkill !
