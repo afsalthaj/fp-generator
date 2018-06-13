@@ -221,7 +221,7 @@ That solved finite/infinite data generation to a certain extent.
 ## Problem 2
 Consider we are generating data that represents account balance of 2 individuals, A and B.
 
-The rate of increase of A's account balance should be 2% and that of B should b e 3%. A's account balance should start with a balance of 0 and that of B should be 10. Once generated, process and send it to EventHub (println)
+The rate of increase of A's account balance should be 2% and that of B should be 3%. A's account balance should start with a balance of 0 and that of B should start with 10. Once generated, process and send it to EventHub (println)
 
 
 ----
