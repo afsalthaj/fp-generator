@@ -363,4 +363,7 @@ The pub sub model in fs2 seems to be a bit flaky. The following code proposed in
 As a quick fix to get things going, we used explicit enqueue and dequeue methods using fs2 itself and that made the app deterministic.
 
 ## TODO
-* Integration with Scalacheck?  Well I tried and bumped into several loopy codes, internally asking myself why would I want to..why would I want to....for composing? May be... But I will keep trying..
+#### Integration with **Scalacheck**?  **fs2-scalacheck**? 
+Well I tried and bumped into several loopy codes converting `Gen` to `fs2.Stream` and while I do that I have this question reverberating "why would I want to..why would I want to"
+
+....for composing? May be... But I will keep trying..
