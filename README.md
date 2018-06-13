@@ -362,8 +362,9 @@ The pub sub model in fs2 seems to be a bit flaky. The following code proposed in
 
 As a quick fix to get things going, we used explicit enqueue and dequeue methods using fs2 itself and that made the app deterministic.
 
-## TODO
+## PS
 #### Integration with **Scalacheck**?  **fs2-scalacheck**? 
-Well I tried and bumped into several loopy codes converting `Gen` to `fs2.Stream` and while I do that I have this question reverberating "why would I want to..why would I want to"
+Well I tried and bumped into several loopy codes converting `Gen` to `fs2.Stream`.  
+Well, I have this question reverberating "why would I even want to..why would I want to". May be for fun.
 
-....for composing? May be... But I will keep trying..
+The entire point of fp-generator is to have [granular control over your data](https://github.com/afsalthaj/fp-generator/blob/master/datagen_why.md#fp-generator-vs-scalacheck-), or in other words, the seed of generator is with in our control, and we define the next value and the termination condition... Well still not convinced? Try it yourself :)
