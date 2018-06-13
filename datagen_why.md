@@ -448,9 +448,18 @@ Now, see the below results of our solution.
 
 // With the knowledge of #:::, our solution is
 
-val r = generator(0)(t => { val s = t ; Some(s, s) })
-val gen1 = r.take(3).map(t => "A" + ": " + t)
-val gen2 = r.map(t => t + 10).take(3).map(t => "B" + ": " + t)
+val r = generator(0)(t => { 
+  val s = t + 1 
+  Some(s, s) 
+})
+
+val gen1 = r.take(3).map { 
+  t => "A" + ": " + t 
+}
+
+val gen2 = r.map(t => t + 10).take(3).map { 
+  t => "B" + ": " + t 
+}
 
  (gen1.map{t => {Thread.sleep(1000); t} } #:::
     gen2.map {t => {Thread.sleep(1500); t} }).foreach(t =>
