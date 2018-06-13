@@ -319,7 +319,7 @@ That solved problems to a great extent. We have `generator` function that deals 
 At this point, we are convinced with following points.
 
 - Streaming is a right approach. It is lazy and gels well with co-recursion.
-- A Stream return instead of a unit return resulted in easier composition.
+- A return type of `Stream` instead of a return type of `Unit` made us capable to compose generations !
 
 With this, we have a nice data generation function that handles `state`, `compositions` and `terminations`.
 
