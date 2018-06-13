@@ -666,15 +666,15 @@ Generator.runBatch[IO, Int, Int](10, generator1, generator2)(list => IO(println(
 
 -------
 
-## So why should I use fp-generator ?
+## fp-generator vs ScalaCheck ?
 
-You don't need to use fp-generator
+Well, we don't need to use fp-generator if:
 
-* If we don't care granular control over behavior of data. In other words, we don't need to control the generation of A and B transactions separately, we want them to have a unified arbitrary behavior with a few value compositons.
+* we don't care granular control over behavior of data. In other words, we don't need to control the generation of A and B transactions separately, we want them to have a unified arbitrary behavior with a few value compositons.
 
-* If we don't care timing of each generation.
-* If generation code doesn't involve talking to external systems during processing, and associated back-pressure handling.
-* If concurrency and order of data isn't a thing at all
+* we don't care timing of each generation.
+* generation code doesn't involve talking to external systems during processing, and associated back-pressure handling.
+* concurrency and order of data isn't a concern at all
 
 All that you care is arbitrary instances of a `case class` and printing it out to test your function/system, then most probably [ScalaCheck] (https://github.com/rickynils/scalacheck) is the way to go!
 
@@ -690,39 +690,3 @@ Thank you!
 ------
 
 
-
-# Appendix
-
-
--------
-
-## Why not State Monad (scalaz.State) ?<a name = "statemonad?"></a>
-
-How do we manage:
-
-* Infinite generation? - Well it doesn't accumulate the results
-* Termination condition? - Nothing cohesive to handle it. It is S => (S, A)
-* Stack safety? - There is complexity to solve it using tail recursion.
-* We don't need heap to solve this usecase.  
-* A state with its combinators ineherently in recursive mode  and not in co-recursive mode + trampolining seems to be an overkill !
-
-More on why state monad not used here, in next slide!
-
------
-
-
-## State doesn't always mean State monad.
-
-Once you form the `State` we still need to do something like this to generate data, giving no reasonable advantage of forming it in the first instance. 
-
-```scala
-
-val s = State.apply[Int, Int](t => ((t + 1), (t + 1)))
-
-unfold(0)(x => Some(s.run(x)))
-
-```
-
-Well, we need to revisit this statement
-
-----
