@@ -5,12 +5,6 @@ Feel free to skip straight into examples in README to get a quick understanding.
 ## Why an abstraction for data gen? (optional read)
 Data generation sounds trivial but many times we end up writing more code than the logic of data generation. In short, this abstraction allows you to focus only on the logic of a data generation and forget about the mechanical coding that is needed to make things work.
 
-As a user, we need to specify only the `rule for data generation`, and the `processing function` that is to be done on each instance of data. 
-
-* `rule for data generation` is `given a previous state, what is the new state and value, and the termination condition if any`.
-
-* `processing function` is a function `f` that will be executed on each instance of data (or a batch of data, more on this below)
-
 Find out more information in [here](https://github.com/afsalthaj/fp-generator/blob/master/datagen_why.md)
 
 To see the working usages, please refer to [examples](src/main/scala/com/thaj/generator/examples).
@@ -219,14 +213,7 @@ Refer to `GeneratorComposition` in examples folder to get insights on compositio
     Generator.run(generator1, generator2, complexGen)..
 ```
 
-### Concurrency
-Internally we use fs2 queues to emulate a pub-sub model, and made generation of data and processing of data decoupled with each other.Essentially you can consider this to be similar to queuing up your generated data to a concurrent hashmap and spinning `n` worker threads that dequeues the processes and execute them.
-
-Also, each generator is independent of each other in its execution (unless we composed them with each other). 
-This is done by converting each generator to a `fs2.Stream` internally, and then folding the list of streams
-by merging the stream together. 
-
-### Time delays
+### Concurrency & Time delays
 Concurrency management also implies, you can incorporate delays per generator. Ex: The number of account transactions per day for person x is less than person y's. In that way, we have granular control over the timing of data gen. The time delays work for batching too (`runGen`) in the same way. i.e, If the given delay is `t`, there will be a delay of `t` between each batch execution.
 
 At the end of the day, we need nice looking graphs!. Let's see this in action.
@@ -321,46 +308,9 @@ of `t seconds` between every batch generation/processing.
 
 ### Back pressure
 The processing of data involves sending it to external system such as eventhubs, kafka or other streaming services. 
-Hence with a fire and forget mechanism, we might be sending either too much or too less data depending on the load of target system, leading to intermittent errors and data loss. Internally, the backpressure is handled using async queue such that data generation depends on how fast the data is being processed. Again, we reuse fs2's capability as much as we can and refrain from low level concurrency primitives. 
+Hence with a fire and forget mechanism, we might be sending either too much or too less data depending on the load of target system, leading to intermittent errors and data loss. 
 
-## A few fs2 bits hiccups (Optional Read)
-If you are looking at the implementation, we used explicit enqueue and dequeue instead of directly using publisher subscriber model in fs2.
-The pub sub model in fs2 seems to be a bit flaky. The following code proposed in various blogs and documentations was in fact showing non-determinism.
-
-```scala
-
-  val number = new java.util.concurrent.atomic.AtomicLong(1)
-
-  def withTopic[F[_]](stream: Stream[F, Int], f: Int => F[Unit])(implicit F: Effect[F]): Stream[F, Unit] = {
-    val topicStream : Stream[F, Topic[F, Int]] = Stream.eval(fs2.async.topic[F, Int](0))
-
-      topicStream.flatMap { topic =>
-        val publisher: Stream[F, Unit] = stream.to(topic.publish)
-        val subscriber: Stream[F, Unit] = topic.subscribe(10).evalMap[Unit](f)
-
-        publisher.concurrently(subscriber)
-      }
-  }
-
-    (0 to 1000).foreach {i =>
-      println(s"i is $i")
-      number.set(0)
-
-     withTopic[IO](
-        fs2.Stream.fromIterator[IO, Int]( List(110, 10).toIterator), int => IO {
-          println(Thread.currentThread().getName + " " + int)
-          number.getAndAdd(int)
-        }
-      ).compile.drain.unsafeToFuture()
-
-      Thread.sleep(500)
-      println(number.get())
-      assert(number.get() == 120)
-    }
-
-```
-
-As a quick fix to get things going, we used explicit enqueue and dequeue methods using fs2 itself and that made the app deterministic.
+Internally, the backpressure is handled using async queue such that data generation depends on how fast the data is being processed. Again, we reuse fs2's capability as much as we can and refrain from low level concurrency primitives. 
 
 ## Potential questions
 [Appendix](https://github.com/afsalthaj/fp-generator/blob/master/appendix.md)
