@@ -415,7 +415,7 @@ val gen2 = r.map(t => t + 10).map(t => "B" + ": " + t)
 
 
 (gen1 ++  gen2.map {t => { Thread.sleep(4000); t } }
-).take(20).foreach(t => 
+).foreach(t => 
    Future{ println(t + " Datetime: " + java.time.Instant.now) } )
 
 
