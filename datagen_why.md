@@ -326,7 +326,7 @@ With this, we have a nice data generation function that handles `state`, `compos
 ## Wait ! There are more problems to solve
 
 There are more problems in our pipeline to solve:
--  **Concurrency**: How about multiple instances of `S => Option[(S, A)]` in parallel?
+-  **Concurrency**: How about multiple instances of `S => Option[(S, A)]` concurrently?
 -  **Batching** of data.
 -  **Delay**.
 -  **Backpressure** when sending data to external systems.
