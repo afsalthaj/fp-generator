@@ -192,9 +192,7 @@ Specify multiple `rules of generation`, a `batch size`, a `processing function` 
 ```
 
 ### Compositionality
-The generators can be composed because it is a monad. This allows us to have some of the instances of data generations dependent on each other.
-
-Ex: To generate x's account transactions along with y's  account transactions, such that x's account balance is always
+Example: generate x's account transactions along with y's  account transactions, such that x's account balance is always
 higher than that of y's.
 
 Refer to `GeneratorComposition` in examples folder to get insights on compositionality, and how it can be used in your usecase.
@@ -212,10 +210,7 @@ Refer to `GeneratorComposition` in examples folder to get insights on compositio
 ```
 
 ### Concurrency & Time delays
-Concurrency management also implies, you can incorporate delays per generator. Ex: The number of account transactions per day for person x is less than person y's. In that way, we have granular control over the timing of data gen. The time delays work for batching too (`runGen`) in the same way. i.e, If the given delay is `t`, there will be a delay of `t` between each batch execution.
-
-At the end of the day, we need nice looking graphs!. Let's see this in action.
-
+Ex: The number of account transactions per day for person x is less than person y's, such that y shouldn't wait during the delays in x.
 
 ```scala
 
