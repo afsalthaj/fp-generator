@@ -362,13 +362,5 @@ The pub sub model in fs2 seems to be a bit flaky. The following code proposed in
 
 As a quick fix to get things going, we used explicit enqueue and dequeue methods using fs2 itself and that made the app deterministic.
 
-## PS
-#### Integration with **Scalacheck**?  **fs2-scalacheck**? 
-Well I tried and bumped into several loopy codes converting `Gen` to `fs2.Stream`.  
-But I have also got this question reverberating "why would I even want to..why would I event want to". 
-May be for fun and no much value-add! 
-
-The entire point of fp-generator is to have [granular control over your data](https://github.com/afsalthaj/fp-generator/blob/master/datagen_why.md#fp-generator-vs-scalacheck-) (what exactly, when exactly, how many instances with each of them at what rate and how dependent). Note that, with `S => Option[(S, A)]` the seed of generator (`S`) is with in our control, and we define the next value and the termination condition unlike Scalacheck where `S` is `Random Number Generator` essentially!... 
-Well still not convinced? Feel free to try along with me and contribute.
-
+## Potential questions
 [Appendix](https://github.com/afsalthaj/fp-generator/blob/master/appendix.md)
