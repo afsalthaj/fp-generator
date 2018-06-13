@@ -634,12 +634,14 @@ https://github.com/afsalthaj/fp-generator
 ## We achieved?
 
 * We achieved data gen 
+   - with _granular control over the value and behavior of data points_
    - with _State_
    - with _Concurrency_
    - with _Batching_
    - with _Delays_
    - with _Back pressure_
 
+PS: If you don't care granular control over behavior of data, it's timing, and doesn't involve talking to external systems during processing, most probably [ScalaCheck](https://github.com/rickynils/scalacheck) is the path for you!
 
 ----
 
