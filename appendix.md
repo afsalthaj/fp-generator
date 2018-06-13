@@ -13,8 +13,6 @@ If we think we need both, why would we even want to form a state monad which doe
 * Stack safety? - There is complexity to solve it using tail recursion. We don't need heap to solve this usecase.  
 * A state with its combinators ineherently in recursive mode  and not in co-recursive mode + trampolining seems to be an overkill !
 
-More on why state monad not used here, in next slide!
-
 -----
 
 
