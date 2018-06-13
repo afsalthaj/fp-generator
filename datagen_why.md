@@ -640,9 +640,6 @@ https://github.com/afsalthaj/fp-generator
    - with _Batching_
    - with _Delays_
    - with _Back pressure_
-
-PS: If you don't care granular control over behavior of data (Ex: you no more care `A` and `B` and they are arbitrary), if you don't care timing of each generation, and also doesn't involve talking to external systems during processing, most probably [ScalaCheck] i(https://github.com/rickynils/scalacheck) is the way to go!
-
 ----
 
 ## Well, the whole problem is now as easy as!
@@ -669,6 +666,20 @@ Generator.runBatch[IO, Int, Int](10, generator1, generator2)(list => IO(println(
 
 -------
 
+## So why should I use fp-generator ?
+
+You don't need to use fp-generator
+
+* If we don't care granular control over behavior of data. In other words, we don't need to control the generation of A and B transactions separately, we want them to have a unified arbitrary behavior with a few value compositons.
+
+* If we don't care timing of each generation.
+* If generation code doesn't involve talking to external systems during processing, and associated back-pressure handling.
+* If concurrency and order of data isn't a thing at all
+
+All that you care is arbitrary instances of a `case class` and printing it out to test your function/system, then most probably [ScalaCheck] (https://github.com/rickynils/scalacheck) is the way to go!
+
+
+---------
 
 Visit https://github.com/afsalthaj/fp-generator for more examples
 
