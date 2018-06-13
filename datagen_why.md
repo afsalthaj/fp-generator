@@ -563,14 +563,13 @@ With `fs2.Stream[F, A]`, we get this encoding for free. It says, every element `
 
 ## Easier way to run two instances of generations concurrently!
 
-We found it difficult to make generate and process A's and B's transactions together without waiting for each other. We can easily get around this problem using
+Until now, we find it difficult to  "generate and process" A's and B's transactions concurrently without waiting for each other. B's transactions always waited for A's transactions to finish. Forgetting low level concurrency primitives, We can easily get around this problem using:
 
 ```scala
 fs2.streamofA.merge(fs2.streamofB)
 ```
 
-The account transaction of person 1 generates can now be concurrently generated with that of person 2. With this, incorporating delays is no more an issue to concurrency.
-
+Now A and B do their transactions individually and don't wait for each other. They continue to increase their balance at any time they intend to transact.
 
 -----
 
