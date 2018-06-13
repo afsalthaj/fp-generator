@@ -294,7 +294,10 @@ We removed `process` function from the previous function resulting in our [old s
 
 
 ```scala
-val r = generator(0)(t => { val s = t + 1) ; Some(s.round.toInt, s.round.toInt) })
+val r = generator(0)(t => { 
+  val s = t + 1
+  Some(s, s) 
+})
 
 // First generator
 val gen1 = r.take(10)
