@@ -510,8 +510,8 @@ Although **processing** of each data point is made `effectful` with `Future`, th
 ## More problems?
 Trying to define all problems and solutions is not practical here. However we need to atleast think about more problems before we convince ourselves that some engineering is required now.
 
-* Assume that you solved the above problem of concurrency, try and resolve how that is applicable when you need to `batch` the data?
-* Assume you have solved the concurrency issues along with batching, try and resolve the problem of `back-pressure` -i.e, the destination service of data tells you "Please slow down your generation + processing, because I am overloaded !"
+* Assume that you solved the above problem of concurrency, try and resolve how that is applicable when you need to `batch` the data? (Delays between batch?, delays between each instance of batch?)
+* Assume you have solved the concurrency issues along with batching, try and resolve the problem of `back-pressure` -i.e, the destination service (eg: Kafka/Eventhub etc) directs you "Please slow down your generation + processing, because I am overloaded !" or "Please increase your speed, I am free!"
 
 
 -----
@@ -554,7 +554,7 @@ With `fs2.Stream[F, A]`, we get this encoding for free. It says, every element `
 
 ----
 
-## Easier way to run two instances of generations in parallel
+## Easier way to run two instances of generations concurrently!
 
 We found it difficult to make generate and process A's and B's transactions together without waiting for each other. We can easily get around this problem using
 
