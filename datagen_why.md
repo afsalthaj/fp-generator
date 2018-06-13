@@ -245,7 +245,7 @@ This looks similar to our [previous code](#simpledatagen), although it returns a
 
 ------
 
-## Solving usecase 2
+## Solution to Problem 2
 
 ```scala
 generateAndProcess(0.0){
@@ -273,7 +273,7 @@ Make sure that the balance of `B` has some values greater than that of `A`.
 
 ----
 
-## Solution 
+## Solution to Problem 3
 
 To solve above problem, the previous code shouldn't return `unit` or any `side effect`. Because returning `Unit` prevents composition.
 
@@ -383,6 +383,8 @@ Assume that you need to batch the data to optimise the processing of data. Ex: S
 
 --------
 
+## Solution to Problem 5
+
 ```scala
 val r = generator(0)(t => { val s = t + 1) ; Some(s, s })
 val gen1 = r.take(10).map(t => "A" + ": " + t)
@@ -409,7 +411,7 @@ Both account transaction data should be simultaneous, or in other words, we stil
 
 ---------
 
-## Solution (trying...)
+## Solution to Problem 6 (trying...)
 
 ```scala
 val r = generator(0)(t => { 
