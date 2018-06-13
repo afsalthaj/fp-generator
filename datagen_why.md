@@ -249,11 +249,11 @@ This looks similar to our [previous code](#simpledatagen), although it returns a
 
 ```scala
 generateAndProcess(0.0){
-  t => if (t == 100) None else Some((t+2, t+2)) 
+  t => if (t == 100) None else Some((t + 2, t + 2)) 
 }(println)
 
 generateAndProcess(10.0){
-  t => if (t == 100) None else Some((t+3, t+3))
+  t => if (t == 100) None else Some((t + 3, t + 3))
 }(println)
 
 ```
