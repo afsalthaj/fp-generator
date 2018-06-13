@@ -409,10 +409,18 @@ Both account transaction data should be simultaneous, or in other words, we stil
 ## Solution (trying...)
 
 ```scala
-val r = generator(0)(t => { val s = t ; Some(s, s) })
-val gen1 = r.take(10).map(t => "A" + ": " + t)
-val gen2 = r.map(t => t + 10).map(t => "B" + ": " + t)
+val r = generator(0)(t => { 
+  val s = t + 1
+  Some(s, s) 
+})
 
+val gen1 = r.take(10).map { 
+  t => "A" + ": " + t 
+}
+
+val gen2 = r.map(t => t + 10).map { 
+  t => "B" + ": " + t
+}
 
 (gen1 ++  gen2.map {t => { Thread.sleep(4000); t } }
 ).foreach(t => 
@@ -427,7 +435,12 @@ val gen2 = r.map(t => t + 10).map(t => "B" + ": " + t)
 Consider the first part of the above solutoon:
 
 ```scala
-val s = (gen1 ++ gen2.map {t => {Thread.sleep(4000); t} })
+val s = (gen1 ++ gen2.map {
+  t => {
+    Thread.sleep(4000)
+    t
+  }
+})
       
 println(s)   
 
