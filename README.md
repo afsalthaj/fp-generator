@@ -251,11 +251,7 @@ Ex: The number of account transactions per day for person x is less than person 
 
 scala-execution-context-global-12 2010
 scala-execution-context-global-13 2020
-scala-execution-context-global-12 2030
-scala-execution-context-global-18 200
-...
-scala-execution-context-global-12 900
-scala-execution-context-global-11 2110
+.....
 scala-execution-context-global-16 1000  
 ....
 scala-execution-context-global-13 2480  
@@ -266,28 +262,11 @@ scala-execution-context-global-17 2
 scala-execution-context-global-17 2570  
 ..
 scala-execution-context-global-11 3260
-scala-execution-context-global-15 3270
-scala-execution-context-global-13 3280
+
 scala-execution-context-global-16 3
 scala-execution-context-global-17 3290
 ...  
 ...
-scala-execution-context-global-13 3390
-scala-execution-context-global-15 3400  
-...
-scala-execution-context-global-11 3430
-scala-execution-context-global-17 3440  
-...  
-...  
-..
-scala-execution-context-global-18 3660
-scala-execution-context-global-18 4  
-...
-scala-execution-context-global-11 3710  
-...  
-...
-scala-execution-context-global-16 3980
-scala-execution-context-global-16 3990
 scala-execution-context-global-11 4000
 scala-execution-context-global-16 5
 ...
