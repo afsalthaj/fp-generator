@@ -333,12 +333,12 @@ With this, we have a nice data generation function that handles `state`, `compos
 
 -------
 
-## Problem 4 -Concurrency
+## Problem 4 - Concurrency
 In problem 3, we generated account transactions of A and B that are dependent on each other. However, the entire point of giving dependency is that, at the same point in time (or almost), the account balance of B should be greater than that of A.
 
 ---------
 
-## Solution to Problem 4
+## Solution
 
 The quickest solution to `problem 4` is using Future. This is more or less `Fire and Forget`. 
 We expect, at a point in time, we have balance for both B and A, such that `B > A`.
@@ -383,7 +383,7 @@ Assume that you need to batch the data to optimise the processing of data. Ex: S
 
 --------
 
-## Solution to Problem 5
+## Solution
 
 ```scala
 val r = generator(0)(t => { val s = t + 1) ; Some(s, s })
@@ -411,7 +411,7 @@ Both account transaction data should be simultaneous, or in other words, we stil
 
 ---------
 
-## Solution to Problem 6 (trying...)
+## Solution (trying...)
 
 ```scala
 val r = generator(0)(t => { 
