@@ -527,7 +527,7 @@ Definimng solutions to all potential problems here. However, worth noting more p
 
 ## We bumped into following problems essentially!
 * Concurrently **processing** account transaction of two individuals was ok, but it gets into convoluted code when we have a dozen individuals. **Granular control over the data** becoming hard.
-* Incorporating **delays** to control the generation per instance was fragile and blocking. We couldn't encode the fact transaction rate of `A` is greater than that of `B`.
+* Incorporating **delays** to control the generation per instance was fragile and blocking. We failed to code in that, account transaction rate of `A` is greater than that of `B`.
 * Handling **batching** along with handling `state` + `concurrency` + `delays` lead to more complex code in a datagen app.
 * This along with solving **back pressure**  leads to more mechanical code.
 
