@@ -3,7 +3,7 @@ A simple light weight FP abstraction for data generation and processing with gra
 
 In short, this abstraction allows you to forget about the mechanical coding that is required for any generation and processing application.
 
-Find out more information in [here](https://github.com/afsalthaj/fp-generator/blob/master/datagen_why.md)
+Find out more information in [here](docs/datagen_why.md)
 
 To see the working usages, please refer to [examples](src/main/scala/com/thaj/generator/examples).
 
@@ -276,4 +276,4 @@ Hence with a fire and forget mechanism, we might be sending either too much or t
 Internally, the backpressure is handled using async queue such that data generation depends on how fast the data is being processed. Again, we reuse fs2's capability as much as we can and refrain from low level concurrency primitives. 
 
 ## Potential questions
-[Appendix](https://github.com/afsalthaj/fp-generator/blob/master/appendix.md)
+[Appendix](docs/appendix.md)
