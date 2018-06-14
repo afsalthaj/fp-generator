@@ -9,11 +9,12 @@
 Its a bit wordy :
 
 * Termination condition? - Nothing cohesive to handle it. It is `S => (S, A)` and not `S => Option[(S, A)]` though we could make it act like a terminating data generation code.
-* Infinite generation? - Comparing `Stream` with `State Monad combinators`, I thought I will go with streams because then I can pass a list of generators, and all sort of heavy lifting can be then done fs2.Stream. I think, it doesn't simplify anything, and adds complexity.
+* Infinite generation? - Comparing `Stream` with `State Monad combinators`, I thought I will go with streams because then I can pass a list of generators, and all sort of heavy lifting can be then done with fs2.Stream combinators. 
+I think, adding `State monad` doesn't simplify anything, and adds complexity.
 * Stack safety? - There is complexity to solve it without heap?. I think in scalaz, there is more code to trampoline `State`, and in `Cats` it is inherently trampolined. However, I think we don't want to send anything to heap to solve this usecase. Everything can be solved with a single frame allocation in stack.
 * A state with its combinators + trampolining + injecting terminations seemed to be an overkill.
 
-Ready to take in if `State` monad instead of `Generator` monad if it provides something useful here, and feel free to contribute.
+Ready to take in if `State` monad instead of `Generator` monad if it provides something useful in our usecase, and feel free to raise issue/contribute.
 
 -----
 
