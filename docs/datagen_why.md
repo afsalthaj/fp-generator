@@ -247,7 +247,7 @@ This looks similar to our [previous code](#simpledatagen), although it returns a
 
 ------
 
-## Solution to Problem 2
+## Solution
 
 ```scala
 generateAndProcess(0.0){
@@ -275,7 +275,7 @@ Make sure that the balance of `B` has some values greater than that of `A`.
 
 ----
 
-## Solution to Problem 3
+## Solution
 
 To solve above problem, the [previous code](#returningunit) shouldn't return `unit` or any `side effect`. Because returning `Unit` prevents composition.
 
@@ -317,7 +317,7 @@ That solved problems to a great extent. We have `generator` function that deals 
 
 -----
 
-## Let's take a break. So what did we learn?
+## what did we learn ny now?
 At this point, we are convinced with following points.
 
 - Streaming is a right approach. It is lazy and gels well with co-recursion.
