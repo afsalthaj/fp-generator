@@ -9,7 +9,7 @@ This writeup isn't about managing Random types and its compositions/ `scala-chec
 ----
 ## This is:
 
-- World of `termination conditions`, `effects`, `state of data points`, `concurrency`, `delays`, `backpressure`, `batching` and `compositions`. 
+- `granular control of behavior of data points`, `termination conditions`, `effects`, `state of data points`, `concurrency`, `delays`, `backpressure`, `batching` and `compositions`. 
 - In nutshell, we are going to abstract out `the mechanical side of things` while you generate and process some data. 
 
 ---
@@ -46,7 +46,7 @@ _solved_ !
 
 -----
 
-## Bigger termination condition?
+## Increase the termination condition?
 
 Until it reaches 9000000, instead of 100?
 
@@ -213,8 +213,9 @@ For the time being, we already solved the problem of state transition.
 
 
 # Processing generated data.
-   --  Data generation is not just generation. It is generation  and processing. Mostly, you would need to send this data to somewhere else. We will use `prinln` that represents talking to external systems. 
 
+ * Data generation is not just generation. It is generation  and processing. 
+ * Most of the time, we need to send this data to external systems, probably a streaming service. We will use `prinln` that represents talking to external systems. 
 
 
 -----
@@ -247,7 +248,7 @@ This looks similar to our [previous code](#simpledatagen), although it returns a
 
 ------
 
-## Solution to Problem 2
+## Solution
 
 ```scala
 generateAndProcess(0.0){
@@ -275,7 +276,7 @@ Make sure that the balance of `B` has some values greater than that of `A`.
 
 ----
 
-## Solution to Problem 3
+## Solution
 
 To solve above problem, the [previous code](#returningunit) shouldn't return `unit` or any `side effect`. Because returning `Unit` prevents composition.
 
@@ -317,7 +318,7 @@ That solved problems to a great extent. We have `generator` function that deals 
 
 -----
 
-## Let's take a break. So what did we learn?
+## By now, we learnt
 At this point, we are convinced with following points.
 
 - Streaming is a right approach. It is lazy and gels well with co-recursion.
@@ -328,34 +329,31 @@ With this, we have a nice data generation function that handles `state`, `compos
 
 -----
 
-## Wait ! There are more problems to solve
-
-There are more problems in our pipeline to solve:
--  **Concurrency**: How about multiple instances of `S => Option[(S, A)]` concurrently?
--  **Batching** of data.
--  **Delay**.
--  **Backpressure** when sending data to external systems.
--  **Effects**: Remember, we hammered the problem using `stream.foreach(println)` instead of using a better data type. We finished our `life` early with returning `Unit`!
-
+## There are more problems to solve
 
 -------
 
-## Problem 4 (Concurrency)
+## Problem 4 - Concurrency
 In problem 3, we generated account transactions of A and B that are dependent on each other. However, the entire point of giving dependency is that, at the same point in time (or almost), the account balance of B should be greater than that of A.
 
 ---------
 
-## Let us solve it using `scala.concurrent.Future`.
+## Solution
 
-The quickest solution to `problem 4` is using Future. This is more or less `Fire and Forget`. However, we still expect, at a point in time, we have balance for both B and A, such that `B > A`.
+The quickest solution to `problem 4` is using Future. This is more or less `Fire and Forget`. 
+We expect, at a point in time, we have balance for both B and A, such that `B > A`.
 
 ---------
 
 
 ```scala
-val r = generator(0)(t => { val s = t + 1) ; Some(s.round.toInt, s.round.toInt) })
-val gen1 = r.take(10).map(t => "A" + ": " + t)
-val gen2 = r.map(t => t + 10).take(10).map(t => "B" + ": " + t)
+val r = generator(0) { t => { 
+  val s = t + 1
+  Some(s, s) 
+})
+
+val gen1 = r.take(10).map { t => "A" + ": " + t }
+val gen2 = r.map(t => t + 10).take(10).map { t => "B" + ": " + t }
 
 // (gen1 ++ gen2).take(20).foreach(println) gives synchronised sequential output.
 
@@ -379,16 +377,20 @@ B: 12 Datetime: 2018-06-12T00:52:19Z
 
 --------------
 
-## Problem 5 (Batching)
+## Problem 5 - Batching
 Assume that you need to batch the data to optimise the processing of data. Ex: Send the account balances to Kafka as a batch of 5. 
 
 
 --------
 
-## Solution to Problem 5
+## Solution
 
 ```scala
-val r = generator(0)(t => { val s = t + 1) ; Some(s, s })
+val r = generator(0) { t => 
+  val s = t + 1
+  Some(s, s 
+})
+
 val gen1 = r.take(10).map(t => "A" + ": " + t)
 val gen2 = r.map(t => t + 10).take(10).map(t => "B" + ": " + t)
 
@@ -403,7 +405,7 @@ That was easy.
 --------
 
 
-## Problem 6 (Time Delays)
+## Problem 6 - Time Delays
 
 Generate some data such that rate of number of transactions of `A` is less than that of `B`. 
 
@@ -413,7 +415,7 @@ Both account transaction data should be simultaneous, or in other words, we stil
 
 ---------
 
-## Solution to Problem 6 (trying...)
+## Solution (trying...)
 
 ```scala
 val r = generator(0)(t => { 
@@ -494,7 +496,7 @@ val gen2 = r.map(t => t + 10).take(3).map {
 
 --------------
 
-## Result? Back into synchronised world :(
+## Result? Blocking ! :(
 
 ```
 A: 1 Datetime: 2018-06-12T04:37:46.370Z Thread: scala-execution-context-global-11
@@ -515,20 +517,21 @@ Although **processing** of each data point is made `effectful` with `Future`, th
 --------
 
 ## More problems?
-Trying to define all problems and solutions is impractical here. Nevertheless, we still need to think about more potential problems we may bump into, before we convince ourselves that, some sort of "engineering" is required now.
+Definimng solutions to all potential problems here. However, worth noting more potential problems.
 
-* Assume that you solved the above problem of concurrency, try and resolve how that is applicable when you need to `batch` the data? (Delays between each batch?, delays between each data instance with in a batch?)
-* Assume you have solved the concurrency issues along with batching, try and resolve the problem of `back-pressure` -i.e, the destination service (eg: Kafka/Eventhub etc) directs you "Please slow down your generation + processing, because I am overloaded !" or "Please increase your speed, I am free!"
+* Assuming we solved the above problem of blocking, how do we apply it when we need to `batch` the data? (Ex: Delays between each batch?, delays between each data instance with in a batch?)
+* Assuming we  solved the concurrency issues along with batching, how to solve the issue of `back-pressure` - from Kafka, Eventhub?
 
 
 -----
 
 ## We bumped into following problems essentially!
-* Concurrently **processing** account transaction of two individuals was ok, but it will get bloated once we have a dozen individuals. Essentially, we lost control over the granular behavior of data.
-* Incorporating **delays** to control the generation per instance affected concurrency. 
-* Handling **batching** along with handling `state` + `concurrency` + `delays` will lead to a set of mechanical code with potential low level concurrency primitives,
-* This along with solving back pressure  leads to more and more mechanical code.
-* Assuming we solved everything, we still need that to be written somewhere to re-use!
+* Concurrently **processing** account transaction of two individuals was ok, but it gets into convoluted code when we have a dozen individuals. **Granular control over the data** becoming hard.
+* Incorporating **delays** to control the generation per instance was fragile and blocking. We failed to code in that, account transaction rate of `A` is greater than that of `B`.
+* Handling **batching** along with handling `state` + `concurrency` + `delays` lead to more complex code in a datagen app.
+* This along with solving **back pressure** , which otherwise results in failure and data loss, will lead to more mechanical code. 
+
+In a datagen app, ideally, noone cares these engineering bits that takes time to solve. End of the day, it is just datagen.
 
 -----
 
