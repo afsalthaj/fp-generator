@@ -9,7 +9,7 @@ This writeup isn't about managing Random types and its compositions/ `scala-chec
 ----
 ## This is:
 
-- World of `termination conditions`, `effects`, `state of data points`, `concurrency`, `delays`, `backpressure`, `batching` and `compositions`. 
+- `granular control of behavior of data points`, `termination conditions`, `effects`, `state of data points`, `concurrency`, `delays`, `backpressure`, `batching` and `compositions`. 
 - In nutshell, we are going to abstract out `the mechanical side of things` while you generate and process some data. 
 
 ---
