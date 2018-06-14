@@ -34,7 +34,7 @@ class Determinism  extends Specification with ScalaCheck  with ResultMatchers wi
       }).unsafeToFuture()
 
       // TODO; Find a better way!
-      Try { Await.result(fut, 0.02.seconds)}.fold(_ => number.get() must_=== 465, _ => ko)
+      Try { Await.result(fut, 0.04.seconds)}.fold(_ => number.get() must_=== 465, _ => ko)
     }}
   }
 }
