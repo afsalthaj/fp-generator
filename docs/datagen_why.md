@@ -213,8 +213,9 @@ For the time being, we already solved the problem of state transition.
 
 
 # Processing generated data.
-   --  Data generation is not just generation. It is generation  and processing. Mostly, you would need to send this data to somewhere else. We will use `prinln` that represents talking to external systems. 
 
+ * Data generation is not just generation. It is generation  and processing. 
+ * Most of the time, we need to send this data to external systems, probably a streaming service. We will use `prinln` that represents talking to external systems. 
 
 
 -----
