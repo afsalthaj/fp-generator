@@ -517,19 +517,22 @@ Although **processing** of each data point is made `effectful` with `Future`, th
 --------
 
 ## More problems?
-Trying to define all problems and solutions is impractical here. Nevertheless, we still need to think about more potential problems we may bump into, before we convince ourselves that, some sort of "engineering" is required now.
+Definimng solutions to all potential problems here. However, worth noting more potential problems.
 
-* Assume that you solved the above problem of concurrency, try and resolve how that is applicable when you need to `batch` the data? (Delays between each batch?, delays between each data instance with in a batch?)
-* Assume you have solved the concurrency issues along with batching, try and resolve the problem of `back-pressure` -i.e, the destination service (eg: Kafka/Eventhub etc) directs you "Please slow down your generation + processing, because I am overloaded !" or "Please increase your speed, I am free!"
+* Assuming we solved the above problem of blocking, how do we apply it when we need to `batch` the data? (Ex: Delays between each batch?, delays between each data instance with in a batch?)
+* Assuming we  solved the concurrency issues along with batching, how to solve the issue of `back-pressure` - from Kafka, Eventhub?
 
 
 -----
 
 ## We bumped into following problems essentially!
-* Concurrently **processing** account transaction of two individuals was ok, but it will get bloated once we have a dozen individuals. Essentially, we lost control over the granular behavior of data.
-* Incorporating **delays** to control the generation per instance affected concurrency. 
-* Handling **batching** along with handling `state` + `concurrency` + `delays` led complex code in a datagen app.
+* Concurrently **processing** account transaction of two individuals was ok, but it gets into convoluted code when we have a dozen individuals. **Granular control over the data** becoming hard.
+* Incorporating **delays** to control the generation per instance was fragile and blocking. We couldn't encode the fact transaction rate of `A` is greater than that of `B`.
+* Handling **batching** along with handling `state` + `concurrency` + `delays` lead to more complex code in a datagen app.
 * This along with solving **back pressure**  leads to more mechanical code.
+
+In a datagen app, ideally, noone cares these engineering bits that takes time to solve. End of the day, it is just datagen.
+
 -----
 
 ## Plus more problems
