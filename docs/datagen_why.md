@@ -328,19 +328,11 @@ With this, we have a nice data generation function that handles `state`, `compos
 
 -----
 
-## Wait ! There are more problems to solve
-
-There are more problems in our pipeline to solve:
--  **Concurrency**: How about multiple instances of `S => Option[(S, A)]` concurrently?
--  **Batching** of data.
--  **Delay**.
--  **Backpressure** when sending data to external systems.
--  **Effects**: Remember, we hammered the problem using `stream.foreach(println)` instead of using a better data type. We finished our `life` early with returning `Unit`!
-
+## There are more problems to solve
 
 -------
 
-## Problem 4 (Concurrency)
+## Problem 4 -Concurrency
 In problem 3, we generated account transactions of A and B that are dependent on each other. However, the entire point of giving dependency is that, at the same point in time (or almost), the account balance of B should be greater than that of A.
 
 ---------
@@ -379,7 +371,7 @@ B: 12 Datetime: 2018-06-12T00:52:19Z
 
 --------------
 
-## Problem 5 (Batching)
+## Problem 5 - Batching
 Assume that you need to batch the data to optimise the processing of data. Ex: Send the account balances to Kafka as a batch of 5. 
 
 
@@ -403,7 +395,7 @@ That was easy.
 --------
 
 
-## Problem 6 (Time Delays)
+## Problem 6 - Time Delays
 
 Generate some data such that rate of number of transactions of `A` is less than that of `B`. 
 
@@ -526,10 +518,8 @@ Trying to define all problems and solutions is impractical here. Nevertheless, w
 ## We bumped into following problems essentially!
 * Concurrently **processing** account transaction of two individuals was ok, but it will get bloated once we have a dozen individuals. Essentially, we lost control over the granular behavior of data.
 * Incorporating **delays** to control the generation per instance affected concurrency. 
-* Handling **batching** along with handling `state` + `concurrency` + `delays` will lead to a set of mechanical code with potential low level concurrency primitives,
-* This along with solving back pressure  leads to more and more mechanical code.
-* Assuming we solved everything, we still need that to be written somewhere to re-use!
-
+* Handling **batching** along with handling `state` + `concurrency` + `delays` led complex code in a datagen app.
+* This along with solving **back pressure**  leads to more mechanical code.
 -----
 
 ## Plus more problems
