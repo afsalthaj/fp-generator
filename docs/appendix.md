@@ -14,8 +14,6 @@ How do we manage:
 
 Ready to take in if `State` monad instead of `Generator` monad if it provides something useful here, and feel free to contribute.
 
-```
-
 -----
 
 ## fp-generator vs ScalaCheck ?
