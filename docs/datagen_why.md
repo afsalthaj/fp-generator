@@ -635,9 +635,9 @@ https://github.com/afsalthaj/fp-generator
 
 ## fp-generator internals (generation)
 * Defined a new abstraction called **`Generator[S, A]`**, which is a lawful monad.
-* **`Generator[S, A]`** is internally converted to its batched version through `asBatch` to get **`Generator[S, List[A]]`**.
-* **`Generator[S, A]`** (or `Generator[A, List[A]]`) is internally converted to **`fs2.Stream[F, A]`** to generate data.
-* Processing the generated data using `A => F[Unit]` or `List[A] => F[Unit]` results in  **`fs2.Stream[F, Unit]`**.
+* **`Generator[S, A]`** is internally converted to its batched version with `replicateM` combinator to get **`Generator[S, List[A]]`**.
+* **`Generator`**  is then internally converted to **`fs2.Stream[F, A]`** to generate data (with a mix of merge, concurrently and join methods)
+* Processing can be done by passing `A => F[Unit]` or `List[A] => F[Unit]` which results in  **`fs2.Stream[F, Unit]`**.
 -------
 
 ## We achieved?
