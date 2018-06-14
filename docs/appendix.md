@@ -6,7 +6,8 @@
 
 ## Why not State Monad (scalaz.State) ?<a name = "statemonad?"></a>
 
-How do we manage:
+Its a bit wordy :
+
 * Termination condition? - Nothing cohesive to handle it. It is `S => (S, A)` and not `S => Option[(S, A)]` though we could make it act like a terminating data generation code.
 * Infinite generation? - Comparing `Stream` with `State Monad combinators`, I thought I will go with streams because then I can pass a list of generators, and all sort of heavy lifting can be then done fs2.Stream. I think, it doesn't simplify anything, and adds complexity.
 * Stack safety? - There is complexity to solve it without heap?. I think in scalaz, there is more code to trampoline `State`, and in `Cats` it is inherently trampolined. However, I think we don't want to send anything to heap to solve this usecase. Everything can be solved with a single frame allocation in stack.
@@ -18,7 +19,7 @@ Ready to take in if `State` monad instead of `Generator` monad if it provides so
 
 ## fp-generator vs ScalaCheck ?
 
-Well, we don't need to use fp-generator if:
+We don't need to use fp-generator if:
 
 * we don't care granular control over behavior of data. In other words, we don't need to control the generation of A and B transactions separately, we want them to have a unified arbitrary behavior with a few value compositons.
 
