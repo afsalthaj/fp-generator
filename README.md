@@ -31,13 +31,7 @@ Specify a `rule for data generation` as a simple function and a `processing func
   1
   2
   3
-  4
-  5
-  6
-  7
-  8
-  9
-  10
+  ...
 
 ```
 
@@ -82,21 +76,7 @@ Specify multiple `rule for data generation`, the `processing function`, and then
     2100
     120000
     2
-    130000
-    2200
-    140000
-    3
-    150000
-    2300
-    160000
-    4
-    170000
-    2400
-    180000
-    5
-    190000
-    2500
-    200000
+    ...
     6
     2600
     7
@@ -124,8 +104,7 @@ Specify a `rule of data generation`, specify a `batch size`, a `processing funct
     // output
     List(2, 4, 6, 8, 10, 12, 14, 16, 18, 20)
     List(22, 24, 26, 28, 30, 32, 34, 36, 38, 40)
-    List(42, 44, 46, 48, 50, 52, 54, 56, 58, 60)
-    List(62, 64, 66, 68, 70, 72, 74, 76, 78, 80)
+    ...
     List(82, 84, 86, 88, 90, 92, 94, 96, 98, 100)
     
    
@@ -245,16 +224,8 @@ scala-execution-context-global-13 2020
 .....
 scala-execution-context-global-16 1000  
 ....
-scala-execution-context-global-13 2480  
-...
-scala-execution-context-global-16 2530
 scala-execution-context-global-17 2
 ...
-scala-execution-context-global-17 2570  
-..
-scala-execution-context-global-11 3260
-
-scala-execution-context-global-16 3
 scala-execution-context-global-17 3290
 ...  
 ...
