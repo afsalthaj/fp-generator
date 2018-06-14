@@ -318,7 +318,7 @@ That solved problems to a great extent. We have `generator` function that deals 
 
 -----
 
-## what did we learn ny now?
+## By now, we learnt
 At this point, we are convinced with following points.
 
 - Streaming is a right approach. It is lazy and gels well with co-recursion.
