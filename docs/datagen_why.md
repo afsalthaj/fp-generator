@@ -337,7 +337,7 @@ In problem 3, we generated account transactions of A and B that are dependent on
 
 ---------
 
-## Let us solve it using `scala.concurrent.Future`.
+## Solution to Problem 4
 
 The quickest solution to `problem 4` is using Future. This is more or less `Fire and Forget`. However, we still expect, at a point in time, we have balance for both B and A, such that `B > A`.
 
