@@ -339,15 +339,20 @@ In problem 3, we generated account transactions of A and B that are dependent on
 
 ## Solution to Problem 4
 
-The quickest solution to `problem 4` is using Future. This is more or less `Fire and Forget`. However, we still expect, at a point in time, we have balance for both B and A, such that `B > A`.
+The quickest solution to `problem 4` is using Future. This is more or less `Fire and Forget`. 
+We expect, at a point in time, we have balance for both B and A, such that `B > A`.
 
 ---------
 
 
 ```scala
-val r = generator(0)(t => { val s = t + 1) ; Some(s.round.toInt, s.round.toInt) })
-val gen1 = r.take(10).map(t => "A" + ": " + t)
-val gen2 = r.map(t => t + 10).take(10).map(t => "B" + ": " + t)
+val r = generator(0) { t => { 
+  val s = t + 1
+  Some(s, s) 
+})
+
+val gen1 = r.take(10).map { t => "A" + ": " + t }
+val gen2 = r.map(t => t + 10).take(10).map { t => "B" + ": " + t }
 
 // (gen1 ++ gen2).take(20).foreach(println) gives synchronised sequential output.
 
