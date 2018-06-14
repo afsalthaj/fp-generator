@@ -46,7 +46,7 @@ _solved_ !
 
 -----
 
-## Bigger termination condition?
+## Increase the termination condition?
 
 Until it reaches 9000000, instead of 100?
 
