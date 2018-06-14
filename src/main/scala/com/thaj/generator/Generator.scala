@@ -32,7 +32,7 @@ trait Generator[S, A] { self =>
   def ap[B, C](b: Generator[S, B])(f: (A, B) => C): Generator[S, C] =
     self >>= (bb => b.map(cc => f(bb, cc)))
 
-  private def asBatch(n: Int): Generator[S, List[A]] =
+  def replicateM(n: Int): Generator[S, List[A]] =
     Generator.sequence[S, A](List.fill(n)(self))
 
   // Stateless compositions
@@ -74,7 +74,7 @@ object Generator { self =>
 
   def runBatch[F[_]: Effect, S, A](n: Int, gens: GeneratorWithZero[S, A]*)(f: List[A] => F[Unit]): F[Unit] =
     Fs2PublisherSubscriber.withQueue[F, List[A]](
-      gens.map(t => t.g.asBatch(n).withZero(t.zero).copy(delay = t.delay).asFs2Stream[F]).reduce(_ merge _), f
+      gens.map(t => t.g.replicateM(n).withZero(t.zero).copy(delay = t.delay).asFs2Stream[F]).reduce(_ merge _), f
     ).compile.drain
 
   def run[F[_]: Effect, S, A](gens: GeneratorWithZero[S, A]*)(f: A => F[Unit]): F[Unit] =
