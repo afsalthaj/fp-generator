@@ -54,18 +54,18 @@ object Generator { self =>
   def point[S, A](a: A): Generator[S, A]  =
     create[S, A](s => Some(s, a))
 
-  private[generator] def sequence[S, A](list: List[Generator[S, A]]): Generator[S, List[A]] =
+  def sequence[S, A](list: List[Generator[S, A]]): Generator[S, List[A]] =
     list.foldLeft(self.point[S, List[A]](Nil: List[A]))((acc, a) => a.ap(acc)(_ :: _))
 
-  private[generator] def asFs2Stream[F[_], S, A](z: S, delay: Option[Int])(f: S => Option[(S, A)])(implicit F: Effect[F]): Stream[F, A] = {
+  def asFs2Stream[F[_], S, A](z: S, delay: Option[Int])(f: S => Option[(S, A)])(implicit F: Effect[F]): Stream[F, A] = {
     for {
-      x <-  Stream.eval[F, Option[(S, A)]](
+      a <- Stream.eval[F, Option[(S, A)]](
         F.liftIO {
           cats.effect.IO.sleep(delay.getOrElse(0).milliseconds)
         }.flatMap(_ => F.delay {
           f(z)
         }))
-      stream <- x.fold( Stream.empty.covaryAll[F, A]) {
+      stream <- a.fold( Stream.empty.covaryAll[F, A]) {
         case (state, value) =>
           Stream.eval[F, A](value.pure[F]) ++ asFs2Stream[F, S, A](state, delay)(f)
       }
