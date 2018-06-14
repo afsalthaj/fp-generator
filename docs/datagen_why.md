@@ -386,7 +386,11 @@ Assume that you need to batch the data to optimise the processing of data. Ex: S
 ## Solution
 
 ```scala
-val r = generator(0)(t => { val s = t + 1) ; Some(s, s })
+val r = generator(0) { t => 
+  val s = t + 1
+  Some(s, s 
+})
+
 val gen1 = r.take(10).map(t => "A" + ": " + t)
 val gen2 = r.map(t => t + 10).take(10).map(t => "B" + ": " + t)
 
