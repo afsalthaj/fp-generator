@@ -496,7 +496,7 @@ val gen2 = r.map(t => t + 10).take(3).map {
 
 --------------
 
-## Result? Back into synchronised world :(
+## Result? Blocking ! :(
 
 ```
 A: 1 Datetime: 2018-06-12T04:37:46.370Z Thread: scala-execution-context-global-11
