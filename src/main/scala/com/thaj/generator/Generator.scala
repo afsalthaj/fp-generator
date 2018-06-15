@@ -48,9 +48,6 @@ trait Generator[S, A] { self =>
 }
 
 object Generator { self =>
-  def get[S]: Generator[S, S] =
-    Generator.create(s => Some(s, s))
-
   def create[S, A](f: S => Option[(S, A)]): Generator[S, A] =
     new Generator[S, A] {
       def next: (S) => Option[(S, A)] = f
