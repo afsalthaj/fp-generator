@@ -520,7 +520,7 @@ Although **processing** of each data point is made `effectful` with `Future`, th
 --------
 
 ## More problems?
-Definimng solutions to all potential problems here. However, worth noting more potential problems.
+Defining solutions to all potential problems here is impractical. However, worth noting a few more problems.
 
 * Assuming we solved the above problem of blocking, how do we apply it when we need to `batch` the data? 
    Examples: 
