@@ -519,8 +519,13 @@ Although **processing** of each data point is made `effectful` with `Future`, th
 ## More problems?
 Definimng solutions to all potential problems here. However, worth noting more potential problems.
 
-* Assuming we solved the above problem of blocking, how do we apply it when we need to `batch` the data? (Ex: Delays between each batch?, delays between each data instance with in a batch?)
-* Assuming we  solved the concurrency issues along with batching, how to solve the issue of `back-pressure` - from Kafka, Eventhub?
+* Assuming we solved the above problem of blocking, how do we apply it when we need to `batch` the data? 
+   Examples: 
+   - Delays between each batch?
+   - Delays between each data instance with in a batch? 
+   - Ensuring a batch doesn't have a mix of A's and B's transactions? 
+   - Ensure no data loss during batching? and so on and on!
+* Assuming we  solved the concurrency issues along with batching, how to solve the issue of `back-pressure` - from Kafka, Eventhub?.. 
 
 
 -----
@@ -557,7 +562,7 @@ In a datagen app, ideally, noone cares these engineering bits that takes time to
 
 ## Stream realising through effects - concurrency is encoded with in stream!
 
-We found it difficult to encode the fact that, every element in the `data generation` stream may get realised through an effect - essentially a concurrency Effect `F` (let's say future). 
+We find it difficult to encode the fact that, every element in the `data generation` stream may get realised through an effect - essentially a concurrency Effect `F` (let's say future). 
 
 With `fs2.Stream[F, A]`, we get this encoding for free. It says, every element `A` in the stream may realise in a `Future` (or with any `F`) effect.
 
