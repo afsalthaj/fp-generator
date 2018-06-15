@@ -19,15 +19,15 @@ Ready to take in if `State` monad instead of `Generator` monad if it provides so
 
 ## fp-generator vs ScalaCheck ?
 
-We don't need to use fp-generator if:
+We **don't** need to use fp-generator if:
 
-* we don't care granular control over behavior of data. In other words, we don't need to control the generation of A and B transactions separately, we want them to have a unified arbitrary behavior with a few value compositons.
+* we don't care granular control over behavior of data. In other words, we don't need to control the generation of A and B transactions separately.
 
 * we don't care timing of each generation.
 * generation code doesn't involve talking to external systems during processing, and associated back-pressure handling.
 * concurrency and order of data isn't a concern at all
 
-If all that care is arbitrary instances of a `case class` and doesn't involve much processing (ex: only printing to stdout or write to a file), then most probably [ScalaCheck](https://github.com/rickynils/scalacheck) is the way to go!
+If all that we need is an infinite arbitrary instance of data with a few value compositons (ex: only printing to stdout or write to a file), then most probably [ScalaCheck](https://github.com/rickynils/scalacheck) is the way to go!
 
 
 ----------

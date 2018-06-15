@@ -4,7 +4,7 @@
 
 ## This is not:
 
-This writeup isn't about managing Random types and its compositions/ `scala-check`.
+This writeup isn't about generating and managing Random values and its compositions and control/ `scala-check`.
 
 ----
 ## This is:
@@ -381,6 +381,9 @@ B: 12 Datetime: 2018-06-12T00:52:19Z
 Assume that you need to batch the data to optimise the processing of data. Ex: Send the account balances to Kafka as a batch of 5. 
 
 
+PS: Do note that, this isn't the only use case of batching. Ex: You may need to batch related data (Account balances of all employees in a company. Or, you may need to send the account balances of many people across many companies but a batch should consist of employees of only one company.
+
+
 --------
 
 ## Solution
@@ -409,7 +412,7 @@ That was easy.
 
 Generate some data such that rate of number of transactions of `A` is less than that of `B`. 
 
-Both account transaction data should be simultaneous, or in other words, we still want it to be asynchronous. (Needn't batch the data for now)
+Note, the wait in A's transactions shouldn't block B's.
 
 
 
@@ -517,10 +520,15 @@ Although **processing** of each data point is made `effectful` with `Future`, th
 --------
 
 ## More problems?
-Definimng solutions to all potential problems here. However, worth noting more potential problems.
+Defining solutions to all potential problems here is impractical. However, worth noting a few more problems.
 
-* Assuming we solved the above problem of blocking, how do we apply it when we need to `batch` the data? (Ex: Delays between each batch?, delays between each data instance with in a batch?)
-* Assuming we  solved the concurrency issues along with batching, how to solve the issue of `back-pressure` - from Kafka, Eventhub?
+* Assuming we solved the above problem of blocking, how do we apply it when we need to `batch` the data? 
+   Examples: 
+   - Delays between each batch?
+   - Delays between each data instance with in a batch? 
+   - Ensuring a batch doesn't have a mix of A's and B's transactions? 
+   - Ensure no data loss during batching? and so on and on!
+* Assuming we  solved the concurrency issues along with batching, how to solve the issue of `back-pressure` - from Kafka, Eventhub?.. 
 
 
 -----
@@ -557,7 +565,7 @@ In a datagen app, ideally, noone cares these engineering bits that takes time to
 
 ## Stream realising through effects - concurrency is encoded with in stream!
 
-We found it difficult to encode the fact that, every element in the `data generation` stream may get realised through an effect - essentially a concurrency Effect `F` (let's say future). 
+We find it difficult to encode the fact that, every element in the `data generation` stream may get realised through an effect - essentially a concurrency Effect `F` (let's say future). 
 
 With `fs2.Stream[F, A]`, we get this encoding for free. It says, every element `A` in the stream may realise in a `Future` (or with any `F`) effect.
 
@@ -580,17 +588,17 @@ Now A and B do their transactions individually and don't wait for each other. Th
 ## No more unit return type
 
 It was unfortunate, that we bumped into [return type of _Unit_](#returningunit) after processing the generated data. 
+We don't want to process data. As functional programmers, we should describe the generation **and processing** of data.
+We will then later run it at the end of the World!
 
-With fs2, both generation and processing of data is with in `Stream` data type allowing more scalability by being able to compose further.i.e, `Stream[F, A] => Stream[F, Unit]`
+With fs2, we easily get `Stream[F, A] => Stream[F, Unit]`, which we can later `compile.drain.unsfeRunSync`!
 
 
 -----
 
 ## Batching is easy now
 
-* with fs2, batching is made more easy and intuitive. 
-* Instead of `Stream[A].grouped` returning an `Iterator`, just play with `Stream[F, List[A]]` and the side effecting processing function is then `List[A] => Unit`.
-
+* with fs2, control over batching is actually. It is `Stream[F, List[A]]`. More on this later.
 
 -----
 
