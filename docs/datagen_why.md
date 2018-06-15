@@ -412,7 +412,7 @@ That was easy.
 
 Generate some data such that rate of number of transactions of `A` is less than that of `B`. 
 
-Both account transaction data should be simultaneous, or in other words, we still want it to be asynchronous. (Needn't batch the data for now)
+Note, the wait in A's transactions shouldn't block B's.
 
 
 
