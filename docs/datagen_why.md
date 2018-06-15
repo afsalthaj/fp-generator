@@ -588,17 +588,17 @@ Now A and B do their transactions individually and don't wait for each other. Th
 ## No more unit return type
 
 It was unfortunate, that we bumped into [return type of _Unit_](#returningunit) after processing the generated data. 
+We don't want to process data. As functional programmers, we should describe the generation **and processing** of data.
+We will then later run it at the end of the World!
 
-With fs2, both generation and processing of data is with in `Stream` data type allowing more scalability by being able to compose further.i.e, `Stream[F, A] => Stream[F, Unit]`
+With fs2, we easily get `Stream[F, A] => Stream[F, Unit]`, which we can later `compile.drain.unsfeRunSync`!
 
 
 -----
 
 ## Batching is easy now
 
-* with fs2, batching is made more easy and intuitive. 
-* Instead of `Stream[A].grouped` returning an `Iterator`, just play with `Stream[F, List[A]]` and the side effecting processing function is then `List[A] => Unit`.
-
+* with fs2, control over batching is actually. It is `Stream[F, List[A]]`. More on this later.
 
 -----
 
