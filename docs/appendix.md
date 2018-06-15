@@ -19,7 +19,7 @@ Ready to take in if `State` monad instead of `Generator` monad if it provides so
 
 ## fp-generator vs ScalaCheck ?
 
-We don't need to use fp-generator if:
+We **don't** need to use fp-generator if:
 
 * we don't care granular control over behavior of data. In other words, we don't need to control the generation of A and B transactions separately.
 
