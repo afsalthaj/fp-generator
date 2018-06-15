@@ -381,6 +381,9 @@ B: 12 Datetime: 2018-06-12T00:52:19Z
 Assume that you need to batch the data to optimise the processing of data. Ex: Send the account balances to Kafka as a batch of 5. 
 
 
+PS: Do note that, this isn't the only use case of batching. Ex: You may need to batch related data (Account balances of all employees in a company. Or, you may need to send the account balances of many people across many companies but a batch should consist of employees of only one company.
+
+
 --------
 
 ## Solution
