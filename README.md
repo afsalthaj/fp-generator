@@ -164,7 +164,7 @@ Specify multiple `rules of generation`, a `batch size`, a `processing function` 
 
 ```
 
-### Compositionality
+### Composability
 Example: generate x's account transactions along with y's  account transactions, such that x's account balance is always
 higher than that of y's.
 
