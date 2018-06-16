@@ -588,8 +588,7 @@ Now A and B do their transactions individually and don't wait for each other. Th
 ## No more unit return type
 
 It was unfortunate, that we bumped into [return type of _Unit_](#returningunit) after processing the generated data. 
-We don't want to process data. As functional programmers, we should describe the generation **and processing** of data.
-We will then later run it at the end of the World!
+We don't want the `processing` to run straight away. Instead, as functional programmers, we should be able to describe the generation **and processing** of data, and run it only at the end of the world.
 
 With fs2, we easily get `Stream[F, A] => Stream[F, Unit]`, which we can later `compile.drain.unsfeRunSync`!
 
@@ -598,7 +597,7 @@ With fs2, we easily get `Stream[F, A] => Stream[F, Unit]`, which we can later `c
 
 ## Batching is easy now
 
-* with fs2, control over batching is actually. It is `Stream[F, List[A]]`. More on this later.
+* with fs2, control over batching, and handling related logic is easy with its comprehensive set of combinators.
 
 -----
 
@@ -644,8 +643,8 @@ https://github.com/afsalthaj/fp-generator
 ## fp-generator internals (generation)
 * Defined a new abstraction called **`Generator[S, A]`**, which is a lawful monad.
 * **`Generator[S, A]`** is internally converted to its batched version with `replicateM` combinator to get **`Generator[S, List[A]]`**.
-* **`Generator`**  is then internally converted to **`fs2.Stream[F, A]`** to generate data (with a mix of merge, concurrently and join methods)
-* Processing can be done by passing `A => F[Unit]` or `List[A] => F[Unit]` which results in  **`fs2.Stream[F, Unit]`**.
+* **`Generator`**  is then internally converted to **`fs2.Stream[F, A]`** to generate data (with a mix of merge, concurrently  join, and a set of other combinators)
+
 -------
 
 ## We achieved?
@@ -687,17 +686,19 @@ Generator.runBatch[IO, Int, Int](10, generator1, generator2)(list => IO(println(
 
 -------
 
+
 ## fp-generator vs ScalaCheck ?
 
-Well, we don't need to use fp-generator if:
+We **don't** need to use fp-generator if:
 
-* we don't care granular control over behavior of data. In other words, we don't need to control the generation of A and B transactions separately, we want them to have a unified arbitrary behavior with a few value compositons.
+* we don't care granular control over behavior of data. In other words, we don't need to control the generation of A and B transactions separately.
 
 * we don't care timing of each generation.
 * generation code doesn't involve talking to external systems during processing, and associated back-pressure handling.
 * concurrency and order of data isn't a concern at all
 
-All that you care is arbitrary instances of a `case class` and printing it out to test your function/system, then most probably [ScalaCheck](https://github.com/rickynils/scalacheck) is the way to go!
+If all that we need is an infinite arbitrary instance of data with a few value compositons (ex: only printing to stdout or write to a file), then most probably [ScalaCheck](https://github.com/rickynils/scalacheck) is the way to go!
+
 
 
 ---------
