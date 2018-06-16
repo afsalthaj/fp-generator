@@ -1,4 +1,4 @@
-# `Data Generation`
+# `Data Generation` (Slides)
 
 ----
 
