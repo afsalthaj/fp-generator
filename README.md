@@ -6,7 +6,7 @@ A simple light weight FP abstraction for data generation and processing with gra
 
 In short, this abstraction allows you to forget about the mechanical coding that is required for any generation and processing application.
 
-Find out more information in [here](docs/datagen_why.md)
+Why this abstraction? Get more information [here](docs/datagen_why.md)
 
 To see the working usages, please refer to [examples](src/main/scala/com/thaj/generator/examples).
 
