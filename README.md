@@ -249,6 +249,9 @@ Hence with a fire and forget mechanism, we might be sending either too much or t
 
 Internally, the backpressure is handled using async queue such that data generation depends on how fast the data is being processed. Again, we reuse fs2's capability as much as we can and refrain from low level concurrency primitives. 
 
+## More
+Take a look at the source code which is a few lines of code, to find more functionalities that you may find useful.
+
 ## Potential questions
 [Appendix](docs/appendix.md)
 
