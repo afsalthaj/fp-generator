@@ -112,7 +112,7 @@ object PerformanceComparisonOfFs2WithScalaStream {
         ) ++ asFs2StreamFaster[F, S](o)(f)))
   }
 
-  // way faster even with processing under IO (of the order of 817438756)
+  // way faster even with processing under IO (of the order of 817438756 ns)
   def runToStream[S](f: S => Option[S]): S => scala.Stream[S] = {
     z =>
       def run(z: S): scala.Stream[S] =
@@ -129,10 +129,10 @@ object PerformanceComparisonOfFs2WithScalaStream {
     // faster
     runToStream(f)(0).traverse[IO, Unit] (a =>  IO { println(Thread.currentThread().getName + " " + a) }).unsafeRunSync()
 
-    // slower
+    // slower (by almost 2s compared to above one)
     asFs2StreamFaster[IO, Int](0)(f).evalMap(a =>  IO { println(Thread.currentThread().getName + " " + a)}).compile.drain.unsafeRunSync()
 
-    //too slower
+    // too slower
     asFs2StreamSlower[IO, Int](0)(f).evalMap(a =>  IO { println(Thread.currentThread().getName + " " + a)}).compile.drain.unsafeRunSync()
 
   }
