@@ -643,6 +643,7 @@ https://github.com/afsalthaj/fp-generator
 ## fp-generator internals (generation)
 * Defined a new abstraction called **`Generator[S, A]`**, which is a lawful monad.
 * **`Generator[S, A]`** is internally converted to its batched version with `replicateM` combinator to get **`Generator[S, List[A]]`**.
+* `replicateM` can be useful in many usecases. Example, say if you define `S => Option[(S, AccountTransaction)]` to generate the `AccountTransaction(A, balance)` of one employee `A`,  then `replicateM` can returns a generator of `S => List[AccountTransaction]`, by which you can produce the same account transaction behavior for multiple employees. 
 * **`Generator`**  is then internally converted to **`fs2.Stream[F, A]`** to generate data (with a mix of merge, concurrently  join, and a set of other combinators)
 
 -------
