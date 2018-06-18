@@ -680,7 +680,7 @@ https://github.com/afsalthaj/fp-generator
 Generator.run[IO, Int, Int](accountofA, accountofB)(a => IO(println(a)).unsafeRunSync()
 
 // Generate and Process data as a batch
-Generator.runBatch[IO, Int, Int](10, generator1, generator2)(list => IO(println(lst)).unsafeRunSync
+Generator.runBatch[IO, Int, Int](10, accountofA, accountofB)(list => IO(println(lst)).unsafeRunSync
 
 ```
 
