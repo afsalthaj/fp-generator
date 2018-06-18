@@ -96,7 +96,7 @@ both streams emitting the values through an IO effect. This will stay as a quest
 import cats.effect.{Effect, IO}
 import fs2.Stream
 
-object PerformanceComparisonOfFs2WithScalaStream{
+object PerformanceComparisonOfFs2WithScalaStream {
 
   val f: Int => Option[Int] = s =>  if( s > 100000) None else Some(s + 1)
 
