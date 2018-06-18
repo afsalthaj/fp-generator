@@ -84,10 +84,9 @@ As a quick fix to get things going, we used explicit enqueue and dequeue methods
 ## Performance of fs2 with scala Stream for simple stream usecases.
 
 * fs2 (FP way) and scala.Stream(not really an FP way) work with different concepts apart from both being streams that don't eat the memory. However, we can compare `fs2` with `scala.Stream` for simple usecases.
-* However, performance cost of going with a sophisticated library like fs2 seem to be higher.
+* However, there could be a minor slowness when using fs2 for usecases that can be solved using scala.Stream.
 * The questions with the below code was raised in gitter channel, and it was great to see quick responses. 
-* However, we are a bit unlucky that, all the different ways of achieving the same result with fs2.Stream seem to be slower than with scala.Stream, 
-both streams emitting the values through an IO effect. This will stay as a question in fp-generator until we find a solution in fs2.
+* However, we are a bit unlucky that, all the different ways of achieving the same result with fs2.Stream seem to be a bit slower than with scala.Stream. Bear in mind, this is not really a showstopper.
 
 
 ```scala
@@ -100,19 +99,17 @@ object PerformanceComparisonOfFs2WithScalaStream {
 
   val f: Int => Option[Int] = s =>  if( s > 100000) None else Some(s + 1)
 
-  // Too slower (of the order of 2684748476 ns)
+  // Too slower (of the order of 3705310384 ns)
   def asFs2StreamSlower[F[_], S](z: S)(f: S => Option[S])(implicit F: Effect[F]): Stream[F, S] =
     Stream.eval[F, Option[S]](F.delay(f(z))).unNone.flatMap(x => Stream.emit(x) ++ asFs2StreamSlower(x)(f))
 
-  // Slower (of the order of 1779150562 ns)
-  def asFs2StreamFaster[F[_], S](z: S)(f: S => Option[S])(implicit F: Effect[F]): Stream[F, S] = {
-    Stream.eval[F, Option[S]](F.delay(f(z))).flatMap(
+  // A bit more faster (of the order of 2666544428 ns)
+  def asFs2StreamFaster[F[_], S](z: S)(f: S => Option[S])(implicit F: Effect[F]): Stream[F, S] =
+    Stream.emit(f(z)).flatMap(
       _.fold(Stream.empty.covaryAll[F, S])(
-        o => Stream.eval[F, S](F.delay(o)
-        ) ++ asFs2StreamFaster[F, S](o)(f)))
-  }
+        o => Stream.emit(o) ++ asFs2StreamFaster[F, S](o)(f)))
 
-  // way faster even with processing under IO (of the order of 817438756 ns)
+  // More faster (of the order of 1635168702 ns)
   def runToStream[S](f: S => Option[S]): S => scala.Stream[S] = {
     z =>
       def run(z: S): scala.Stream[S] =
@@ -126,16 +123,16 @@ object PerformanceComparisonOfFs2WithScalaStream {
 
     import cats.implicits._
     
-    // faster
+    // Faster
     runToStream(f)(0).traverse[IO, Unit] (a =>  IO { println(Thread.currentThread().getName + " " + a) }).unsafeRunSync()
 
-    // slower (by almost 2s compared to above one)
+    // A bit slower
     asFs2StreamFaster[IO, Int](0)(f).evalMap(a =>  IO { println(Thread.currentThread().getName + " " + a)}).compile.drain.unsafeRunSync()
 
-    // too slower
+    // Too slower
     asFs2StreamSlower[IO, Int](0)(f).evalMap(a =>  IO { println(Thread.currentThread().getName + " " + a)}).compile.drain.unsafeRunSync()
-
   }
 }
+
 
 ```
