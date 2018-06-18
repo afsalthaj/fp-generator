@@ -81,7 +81,7 @@ The pub sub model in fs2 seems to be a bit flaky. The following code proposed in
 As a quick fix to get things going, we used explicit enqueue and dequeue methods using fs2 itself and that made the app deterministic.
 
 
-## Performance of fs2 with scala Stream
+## Performance of fs2 with scala Stream for simple stream usecases.
 
 * fs2 (FP way) and scala.Stream(not really an FP way) work with different concepts apart from both being streams that don't eat the memory. 
 * However, performance cost of going with a sophisticated library like fs2 seem to be higher.
