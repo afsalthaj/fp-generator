@@ -79,3 +79,63 @@ The pub sub model in fs2 seems to be a bit flaky. The following code proposed in
 ```
 
 As a quick fix to get things going, we used explicit enqueue and dequeue methods using fs2 itself and that made the app deterministic.
+
+
+## Performance of fs2 with scala Stream
+
+* fs2 (FP way) and scala.Stream(not really an FP way) work with different concepts apart from both being streams that don't eat the memory. 
+* However, performance cost of going with a sophisticated library like fs2 seem to be higher.
+* The questions with the below code was raised in gitter channel, and it was great to see quick responses. 
+* However, we are a bit unlucky that, all the different ways of achieving the same result with fs2.Stream seem to be slower than with scala.Stream, 
+both streams emitting the values through an IO effect. This will stay as a question in fp-generator until we find a solution in fs2.
+
+
+```scala
+
+
+import cats.effect.{Effect, IO}
+import fs2.Stream
+
+object PerformanceComparisonOfFs2WithScalaStream{
+
+  val f: Int => Option[Int] = s =>  if( s > 100000) None else Some(s + 1)
+
+  // Too slower (of the order of 2684748476 ns)
+  def asFs2StreamSlower[F[_], S](z: S)(f: S => Option[S])(implicit F: Effect[F]): Stream[F, S] =
+    Stream.eval[F, Option[S]](F.delay(f(z))).unNone.flatMap(x => Stream.emit(x) ++ asFs2StreamSlower(x)(f))
+
+  // Slower (of the order of 1779150562 ns)
+  def asFs2StreamFaster[F[_], S](z: S)(f: S => Option[S])(implicit F: Effect[F]): Stream[F, S] = {
+    Stream.eval[F, Option[S]](F.delay(f(z))).flatMap(
+      _.fold(Stream.empty.covaryAll[F, S])(
+        o => Stream.eval[F, S](F.delay(o)
+        ) ++ asFs2StreamFaster[F, S](o)(f)))
+  }
+
+  // way faster even with processing under IO (of the order of 817438756)
+  def runToStream[S](f: S => Option[S]): S => scala.Stream[S] = {
+    z =>
+      def run(z: S): scala.Stream[S] =
+        f(z).fold(scala.Stream.empty[S]){ a => scala.Stream.cons(a, run(a)) }
+
+      run(z)
+  }
+
+
+  def main(args: Array[String]): Unit = {
+
+    import cats.implicits._
+    
+    // faster
+    runToStream(f)(0).traverse[IO, Unit] (a =>  IO { println(Thread.currentThread().getName + " " + a) }).unsafeRunSync()
+
+    // slower
+    asFs2StreamFaster[IO, Int](0)(f).evalMap(a =>  IO { println(Thread.currentThread().getName + " " + a)}).compile.drain.unsafeRunSync()
+
+    //too slower
+    asFs2StreamSlower[IO, Int](0)(f).evalMap(a =>  IO { println(Thread.currentThread().getName + " " + a)}).compile.drain.unsafeRunSync()
+
+  }
+}
+
+```

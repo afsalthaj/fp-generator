@@ -59,15 +59,11 @@ object Generator { self =>
   def sequence[S, A](list: List[Generator[S, A]]): Generator[S, List[A]] =
     list.foldLeft(self.point[S, List[A]](Nil: List[A]))((acc, a) => a.ap(acc)(_ :: _))
 
-  def asFs2Stream[F[_], S, A](z: S, delay: Option[Int])(f: S => Option[(S, A)])(implicit F: Effect[F]): Stream[F, (S, A)] = {
-    for {
-      opt <- delayed(f(z), delay)
-      stream <- opt.fold( Stream.empty.covaryAll[F,(S, A)]) {
-        case (state, value) =>
-          Stream.eval[F, (S, A)]((state, value).pure[F]) ++ asFs2Stream[F, S, A](state, delay)(f)
-      }
-    } yield stream
-  }
+  def asFs2Stream[F[_], S, A](z: S, delay: Option[Int])(f: S => Option[(S, A)])(implicit F: Effect[F]): Stream[F, (S, A)] =
+    delayed(f(z), delay).flatMap(_.fold(Stream.empty.covaryAll[F,(S, A)]){
+      case (state, value) =>
+        Stream.eval[F, (S, A)](F.delay((state, value))) ++ asFs2Stream[F, S, A](state, delay)(f)
+    })
 
   def runBatch[F[_], S, A](n: Int, gens: GeneratorWithZero[S, A]*)(f: List[A] => F[Unit])(implicit F: Effect[F]): F[Unit] =
     Fs2PublisherSubscriber.withQueue[F, List[A]](
@@ -88,6 +84,10 @@ object Generator { self =>
     Fs2PublisherSubscriber.withQueue[F, A](
       gens.map(t => Generator.asFs2Stream[F, S, A](t.zero, t.delay)(t.g.next).map(_._2)).reduce(_ merge _), f
     ).compile.drain
+
+  // It emits in same thread.
+  def runSync[F[_]: Effect, S, A](gens: GeneratorWithZero[S, A]*)(f: A => F[Unit]): F[Unit] =
+    gens.map(t => Generator.asFs2Stream[F, S, A](t.zero, t.delay)(t.g.next).map(_._2)).reduce(_ ++ _).evalMap(f).compile.drain
 
   @deprecated
   private[generator] def unfoldM[F[_]: Monad, S, A, E](z: S)(f: S => Option[(S, A)])(sideEffect: A => F[E \/ Unit]): F[E \/ Unit] = {

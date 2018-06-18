@@ -2,7 +2,7 @@ import sbt.CrossVersion
 
 name := "fp-generator"
 
-version := "5.0.0"
+version := "5.1.1"
 
 scalaVersion := "2.12.4"
 
