@@ -36,7 +36,7 @@ class SimpleProcessSpec  extends Specification with ScalaCheck  with ResultMatch
       }).unsafeToFuture()
 
       // TODO; The test that tests determinism is not determinstic as we guess how much to wait !
-      Try { Await.result(fut, 1.seconds)}.fold(_ => number.get() must_=== n * (n + 1) / 2, _ => ko)
+      Try { Await.result(fut, 2.seconds)}.fold(_ => number.get() must_=== n * (n + 1) / 2, _ => ko)
     }}.set(minTestsOk = 5).setGen(Gen.choose(1, 10))
   }
 }
