@@ -682,7 +682,7 @@ val io = Generator.run[IO, Int, Int](accountofA, accountofB)(a => IO(println(a))
 // Generate and Process data as a batch
 val io = Generator.runBatch[IO, Int, Int](10, accountofA, accountofB)(list => IO(println(lst)).unsafeRunSync
 
-//  `run`/`runBatch` (or `runSync` that gen and process sequentially) returns `IO` and doesn't actually run anything until // it is called with `unsafeRunSync`
+//  `run`/`runBatch` (or `runSync` that gen and process sequentially) returns `IO` and doesn't actually run anything until it is called with `unsafeRunSync`
 ```
 
 
