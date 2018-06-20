@@ -677,11 +677,12 @@ https://github.com/afsalthaj/fp-generator
  val accountofB = generator.map { _ + 1 }.withZero(0).withDelay(3000)
 
 // Generate and Process data one by one.
-Generator.run[IO, Int, Int](accountofA, accountofB)(a => IO(println(a)).unsafeRunSync()
+val io = Generator.run[IO, Int, Int](accountofA, accountofB)(a => IO(println(a))
 
 // Generate and Process data as a batch
-Generator.runBatch[IO, Int, Int](10, accountofA, accountofB)(list => IO(println(lst)).unsafeRunSync
+val io = Generator.runBatch[IO, Int, Int](10, accountofA, accountofB)(list => IO(println(lst)).unsafeRunSync
 
+//  `run`/`runBatch` (or `runSync` that gen and process sequentially) returns `IO` and doesn't actually run anything until // it is called with `unsafeRunSync`
 ```
 
 
