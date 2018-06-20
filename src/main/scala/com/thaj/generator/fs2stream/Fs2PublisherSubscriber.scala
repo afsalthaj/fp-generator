@@ -13,7 +13,7 @@ trait Fs2PublisherSubscriber {
   def dequeueData[F[_], A](q: Queue[F, A])(implicit F: Effect[F]): Stream[F, A] = q.dequeue
 
   def withQueue[F[_], A](stream: Stream[F, A], f: A => F[Unit])(implicit F: Effect[F]): Stream[F, Unit] = {
-    val queue: Stream[F, Queue[F, A]] = Stream.eval(async.circularBuffer[F, A](100))
+    val queue: Stream[F, Queue[F, A]] = Stream.eval(async.circularBuffer[F, A](4))
 
     queue.flatMap { q =>
       val enqueueStream = enqueueData(q, stream)
