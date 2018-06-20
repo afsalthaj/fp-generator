@@ -41,7 +41,7 @@ Let's be _pragmatic_ and _quickly_ solve the _problem_
 
 ```
 
-_solved_ ! 
+_solved_ ! (Another solution hint: Stream.range(....).scan....)
 
 
 -----
