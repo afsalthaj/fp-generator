@@ -57,7 +57,7 @@ Until it reaches 9000000, instead of 100?
       if (n > 9000000)
         Nil
       else
-        n :: go(n + 1)
+        n :: go(n + 2)
         
     go(0)
   }
@@ -81,7 +81,7 @@ Before that, let's replace `List` with `scala.Stream`
         if (n > 9000000)
           Stream.Empty
         else
-          Stream.cons(n, go(n + 1))
+          Stream.cons(n, go(n + 2))
           
       go(0)
     }
@@ -130,7 +130,7 @@ We need a zero value and a termination condition!
       go(z)
     }
 
-generator(0){ _ + 1 }.take(100).foreach(println)
+generator(0){ _ + 2 }.take(100).foreach(println)
 
 ```
 
@@ -174,7 +174,7 @@ def generator[A](z: A)(f: A => Option[A]): Stream[A] =
 
 ```scala
 
-generator(0) { t => if (t > 29) None else Some(t + 1) }
+generator(0) { t => if (t > 29) None else Some(t + 2) }
 // works! 
 
 ```
@@ -200,7 +200,7 @@ def generator[A](z: S)(f: A => Option[(S, A)]): Stream[A] =
     case None    => Stream.Empty
   }
   
-generator(0) { t => if (t > 29) None else Some((t + 1), (t + 1)) }
+generator(0) { t => if (t > 29) None else Some((t + 2), (t + 2)) }
 ```
 
 That solved finite/infinite data generation to a certain extent. 
