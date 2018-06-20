@@ -84,7 +84,7 @@ As a quick fix to get things going, we used explicit enqueue and dequeue methods
 ## Performance of fs2 with scala Stream for simple stream usecases.
 
 * fs2 (FP way) and scala.Stream(not really an FP way) work with different concepts apart from both being streams that don't eat the memory. However, we can compare `fs2` with `scala.Stream` for simple usecases.
-* However, there could be a minor slowness when using fs2 for usecases that can be solved using scala.Stream.
+* There could be a minor slowness when using fs2 for usecases that can be solved using scala.Stream.
 * The questions with the below code was raised in gitter channel, and it was great to see quick responses. 
 * However, we are a bit unlucky that, all the different ways of achieving the same result with fs2.Stream seem to be a bit slower than with scala.Stream. Bear in mind, this is not really a showstopper.
 
