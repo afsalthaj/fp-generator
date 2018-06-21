@@ -372,6 +372,8 @@ B: 12 Datetime: 2018-06-12T00:52:19Z
 
 ```
 
+PS: You must be thinking of `zip` it? But how scalable it is? And how far will you go?
+
 --------------
 
 ## Problem 5 - Batching
