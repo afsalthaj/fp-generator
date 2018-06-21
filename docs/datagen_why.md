@@ -1,5 +1,4 @@
-# `Data Generation`: 
-why fp-generator abstraction..
+# `Data Generation`, Why fp-generator abstraction ?
 
 ----
 
