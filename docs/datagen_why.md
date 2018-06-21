@@ -664,7 +664,7 @@ https://github.com/afsalthaj/fp-generator
 ## Well, the whole problem is now as easy as!
 
 ```scala
- val generator = Generator.create[Int, Int] {
+ val generator = GeneratorLogic.create[Int, Int] {
    s =>
      if (s < 10)
        Some(s + 1, s + 1)
