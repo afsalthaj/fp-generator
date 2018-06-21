@@ -1,4 +1,5 @@
-# `Data Generation` (Slides)
+# `Data Generation`: 
+why fp-generator abstraction..
 
 ----
 
