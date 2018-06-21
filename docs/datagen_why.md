@@ -644,8 +644,10 @@ https://github.com/afsalthaj/fp-generator
 * Defined a new abstraction called **`Generator[S, A]`**, which is a lawful monad.
 * **`Generator[S, A]`** is internally converted to its batched version with `replicateM` combinator to get **`Generator[S, List[A]]`**.
   -  `replicateM` can be useful in many usecases. Example, say if you define `S => Option[(S, AccountTransaction)]` to generate the `AccountTransaction(A, balance)` of one employee `A`,  then `replicateM` can return a generator for `S => List[AccountTransaction]` for free, by which you can produce the transactions with the same behavior for multiple employees together.
-  - In short, the batch doesn't mix in values from different generators, as we then have to deal with time complexity and data-semantics complexity. It brings down testability and hence, increases complexibility. 
-Example: We don't want to mix in air-pressure values from multiple sensors in a manufacturing unit which produce values of different range at different rates, as all of them are placed under different conditions, in different units.
+  - Since the abstraction does `replicateM` (that produces `Generator[S, List[A]]`) for batching, before it goes to the streaming realm, a single batch will never consist of values from different generators. Otherwise, we are calling for time complexity and data-semantics complexity. 
+
+Example: We don't want to mix in air-pressure values from multiple sensors as they produce values at different range from each other, and at different rates, as all of them are placed under different conditions, in different places in a manufacturing unit. Bear in mind, we need granular control over the data. That's the whole purpose!
+
 * **`Generator`**  is then internally converted to **`fs2.Stream[F, A]`** to generate data (with a mix of merge, concurrently  join, and a set of other combinators)
 
 -------
