@@ -163,7 +163,7 @@ Specify multiple `rules of generation`, a `batch size`, a `processing function` 
     ...
 
 ```
-
+Note that, the batch doesn't mix in values from different generators (unlike the method of using grouped in scala stream or fs2.groupAdjacent). The batch makes sure that it batches values in the same context. 
 ### Composability
 Example: generate x's account transactions along with y's  account transactions, such that x's account balance is always
 higher than that of y's.
