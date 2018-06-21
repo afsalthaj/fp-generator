@@ -18,7 +18,7 @@ Specify a `rule for data generation` as a simple function and a `processing func
 
 ```scala
 
-  val generator = Generator.create {
+  val generator = GeneratorLogic.create {
     s => 
       if (s < 10)
         Some (s + 1, s + 1)
@@ -44,7 +44,7 @@ Specify multiple `rule for data generation`, the `processing function`, and then
 
 ```scala
 
-    val generator1 = Generator.create {
+    val generator1 = GeneratorLogic.create {
       s => {
         (s < 100).option {
           val ss = s + 1
@@ -53,7 +53,7 @@ Specify multiple `rule for data generation`, the `processing function`, and then
       }
     }.withZero(0)
 
-    val generator2 = Generator.create {
+    val generator2 = GeneratorLogic.create {
       s => {
         (s < 10000).option {
           val ss = s + 100
@@ -62,7 +62,7 @@ Specify multiple `rule for data generation`, the `processing function`, and then
       }
     }.withZero(2000)
 
-    val generator3 = Generator.create {
+    val generator3 = GeneratorLogic.create {
       s => {
         (s < 200000).option {
           val ss = s + 10000
@@ -92,7 +92,7 @@ Specify a `rule of data generation`, specify a `batch size`, a `processing funct
 
 ```scala
 
-    val generator = Generator.create {
+    val generator = GeneratorLogic.create {
       s => {
         (s < 100).option {
           val ss = s + 2
@@ -119,7 +119,7 @@ PS: Note that when we using `runBatch` instead of `run` the processing function 
 Specify multiple `rules of generation`, a `batch size`, a `processing function` that operates on a batch, and then call run. Here, batching along with state management is handled with in the library. 
 
 ```scala
-    val generator1 = Generator.create {
+    val generator1 = GeneratorLogic.create {
       s => {
         (s < 100).option {
           val ss = s + 1
@@ -128,7 +128,7 @@ Specify multiple `rules of generation`, a `batch size`, a `processing function` 
       }
     }.withZero(0)
 
-    val generator2 = Generator.create {
+    val generator2 = GeneratorLogic.create {
       s => {
         (s < 10000).option {
           val ss = s + 100
@@ -137,7 +137,7 @@ Specify multiple `rules of generation`, a `batch size`, a `processing function` 
       }
     }.withZero(2000)
 
-    val generator3 = Generator.create {
+    val generator3 = GeneratorLogic.create {
       s => {
         (s < 200000).option {
           val ss = s + 10000
@@ -187,7 +187,7 @@ Ex: The number of account transactions per day for person x is less than person 
 
 ```scala
 
-    val generator1: Generator[Int, Int] =  Generator.create {
+    val generator1: Generator[Int, Int] =  GeneratorLogic.create {
       s => {
         (s < 1000).option {
           val ss = s + 100
@@ -198,7 +198,7 @@ Ex: The number of account transactions per day for person x is less than person 
 
 
     // Incorporating time delay in generator2
-    val generator2: Generator[Int, Int] =  Generator.create {
+    val generator2: Generator[Int, Int] =  GeneratorLogic.create {
       s => {
         (s < 10).option {
           val ss = s + 1
@@ -207,7 +207,7 @@ Ex: The number of account transactions per day for person x is less than person 
       }
     }.withZero(1).withDelay(1000)
 
-    val generator3: Generator[Int, Int] =  Generator.create {
+    val generator3: Generator[Int, Int] =  GeneratorLogic.create {
       s => {
         (s < 4000).option {
           val ss = s + 10
