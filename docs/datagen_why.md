@@ -1,5 +1,4 @@
-# `Data Generation`
-### Why an abstraction ?
+# `Data Generation` ### Why an abstraction ?
 
 ----
 
