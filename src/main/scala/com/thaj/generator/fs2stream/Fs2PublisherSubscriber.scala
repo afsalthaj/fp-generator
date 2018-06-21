@@ -6,18 +6,15 @@ import fs2.async.mutable.Queue
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
+@deprecated("" +
+  "Layering streaming and usage of `join` gives us the same functionality, and it avoids infinite stream, potential locks and races")
 trait Fs2PublisherSubscriber {
-  def enqueueData[F[_], A](q: Queue[F, A], streamData: Stream[F, A])(implicit F: Effect[F]): Stream[F, Unit] =
-    streamData.to(q.enqueue)
-
-  def dequeueData[F[_], A](q: Queue[F, A])(implicit F: Effect[F]): Stream[F, A] = q.dequeue
-
-  def withQueue[F[_], A](stream: Stream[F, A], f: A => F[Unit])(implicit F: Effect[F]): Stream[F, Unit] = {
+  def withQueue[F[_], A](stream: Stream[F, A], f: A => F[Unit], rate: Int)(implicit F: Effect[F]): Stream[F, Unit] = {
     val queue: Stream[F, Queue[F, A]] = Stream.eval(async.boundedQueue[F, A](4))
 
     queue.flatMap { q =>
-      val enqueueStream = enqueueData(q, stream)
-      val dequeStream =   dequeueData(q).evalMap(f)
+      val enqueueStream = stream.to(q.enqueue)
+      val dequeStream =  q.dequeue.evalMap(f)
 
       dequeStream.concurrently(enqueueStream)
     }

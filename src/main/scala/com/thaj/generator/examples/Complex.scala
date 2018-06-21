@@ -1,14 +1,14 @@
 package com.thaj.generator.examples
 
 import cats.effect.IO
-import com.thaj.generator.Generator
+import com.thaj.generator.{Generator, GeneratorLogic}
 
 import scala.util.Random
 
 object Complex {
   case class Swipes(id: String, swipeCount: Double, `type`: String, location: String, floor: Int)
 
-  private val contractSwipes = Generator.create[Double, Double] {
+  private val contractSwipes = GeneratorLogic.create[Double, Double] {
     level =>
       if (level == 100)
         Some(0, 0)
@@ -18,7 +18,7 @@ object Complex {
       }
   }
 
-  private val permSwipes = Generator.create[Double, Double] {
+  private val permSwipes = GeneratorLogic.create[Double, Double] {
     level =>
       if (level == 100)
         Some(0, 0)
@@ -28,7 +28,7 @@ object Complex {
       }
   }
 
-  private val dailyPassSwipes = Generator.create[Double, Double] {
+  private val dailyPassSwipes = GeneratorLogic.create[Double, Double] {
     level =>
       if (level == 100)
         Some(0, 0)
@@ -54,7 +54,7 @@ object Complex {
     conctractSwipeInMelbourne.map(_.withZero(0).withDelay(3000)) ++
     contractSwipesInSydney.map(_.withZero(0).withDelay(3000)) ++
     permSwipeInMelbourne.map(_.withZero(0).withDelay(3500)) ++
-    dailyPassSwipeInSydney.map(_.withZero(0).withDelay(1000))
+    dailyPassSwipeInSydney.map(_.withZero(0).withDelay(7000))
 
   def main(args: Array[String]): Unit = {
     Generator.run[IO, Double, Swipes](allSwipes :_*){

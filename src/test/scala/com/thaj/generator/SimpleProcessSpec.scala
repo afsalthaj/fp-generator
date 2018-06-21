@@ -17,10 +17,9 @@ class SimpleProcessSpec  extends Specification with ScalaCheck  with ResultMatch
     s2"""
         $testDataLossInSimpleProcess
       """
-
   private def testDataLossInSimpleProcess = {
     prop {(n: Int) => {
-      val generator = Generator.create[Int, Int] {
+      val generator = GeneratorLogic.create[Int, Int] {
         s => {
           (s < n).option {
             val ss = s + 1
@@ -35,8 +34,10 @@ class SimpleProcessSpec  extends Specification with ScalaCheck  with ResultMatch
         number.getAndAdd(a)
       }).unsafeToFuture()
 
+      val expected = n * (n + 1) / 2
+
       // TODO; The test that tests determinism is not determinstic as we guess how much to wait !
-      Try { Await.result(fut, 2.seconds)}.fold(_ => number.get() must_=== n * (n + 1) / 2, _ => ko)
-    }}.set(minTestsOk = 5).setGen(Gen.choose(1, 10))
+      Try { Await.result(fut, 2.seconds)}.fold(_ => number.get() must_=== expected, _ => number.get() must_=== expected)
+    }}.set(minTestsOk = 5).setGen(Gen.choose(1, 5))
   }
 }

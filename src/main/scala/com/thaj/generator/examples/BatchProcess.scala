@@ -1,7 +1,7 @@
 package com.thaj.generator.examples
 
 import cats.effect.IO
-import com.thaj.generator.Generator
+import com.thaj.generator.{Generator, GeneratorLogic}
 import scalaz.syntax.std.boolean._
 
 object BatchProcess {
@@ -9,7 +9,7 @@ object BatchProcess {
 
     // Our generator is as simple as specifying a zero val and the state changes
     // Here the state is `Int` and the value is also `Int` for simplicity purpose.
-    val generator: Generator[Int, Int] =  Generator.create {
+    val generator: GeneratorLogic[Int, Int] =  GeneratorLogic.create {
       s => {
         (s < 401).option {
           val ss = s + 1

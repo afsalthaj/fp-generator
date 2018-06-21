@@ -3,7 +3,7 @@ package com.thaj.generator.examples
 import cats.effect.IO
 
 import scala.concurrent.duration._
-import com.thaj.generator.Generator
+import com.thaj.generator.{Generator, GeneratorLogic}
 import scalaz.syntax.std.boolean._
 
 import scala.concurrent.Await
@@ -14,7 +14,7 @@ object GeneratorCompositionWithDelay {
   val number = new java.util.concurrent.atomic.AtomicLong(0)
 
   def main(args: Array[String]): Unit = {
-    val generator1: Generator[Int, Int] = Generator.create {
+    val generator1: GeneratorLogic[Int, Int] = GeneratorLogic.create {
       s => {
         (s < 30).option {
           val ss = s + 1
@@ -23,7 +23,7 @@ object GeneratorCompositionWithDelay {
       }
     }
 
-    val generator2: Generator[Int, Int] = Generator.create {
+    val generator2: GeneratorLogic[Int, Int] = GeneratorLogic.create {
       s => {
         (s < 30).option {
           val ss = s * 10

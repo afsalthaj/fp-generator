@@ -1,14 +1,14 @@
 package com.thaj.generator.examples
 
 import cats.effect.IO
-import com.thaj.generator.Generator
+import com.thaj.generator.{Generator, GeneratorLogic}
 import scalaz.syntax.std.boolean._
 
 object SimpleProcess {
   def main(args: Array[String]): Unit = {
 
     // Our generator is as simple as specifying a zero val and the state changes
-    val generator = Generator.create[Int, Int] {
+    val generator = GeneratorLogic.create[Int, Int] {
       s => {
         (s < 30).option {
           val ss = s + 1

@@ -1,14 +1,14 @@
 package com.thaj.generator.examples
 
 import cats.effect.IO
-import com.thaj.generator.Generator
+import com.thaj.generator.{Generator, GeneratorLogic}
 import scalaz.syntax.std.boolean._
 
 object MultipleGeneratorBatchProcess {
   def main(args: Array[String]): Unit = {
 
     val generator1 =
-      Generator.create[Int, Int] {
+      GeneratorLogic.create[Int, Int] {
         s =>
           (s < 100).option {
             (s + 1, s + 1)
@@ -19,7 +19,7 @@ object MultipleGeneratorBatchProcess {
     // In this case, the n is 10, then we have a delay of 1000ms between each element in generator2
     // while threads for other generators will keep running.
     val generator2 =
-      Generator.create[Int, Int] {
+      GeneratorLogic.create[Int, Int] {
         s =>
           (s < 10000).option {
             (s + 100, s + 100)
@@ -28,7 +28,7 @@ object MultipleGeneratorBatchProcess {
 
     // Some instances may have different rules, different starting points
     val generator3 =
-      Generator.create[Int, Int] {
+      GeneratorLogic.create[Int, Int] {
         s => {
           (s < 200000).option {
             (s + 100,  s + 100)

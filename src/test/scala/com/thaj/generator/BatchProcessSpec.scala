@@ -20,7 +20,7 @@ class BatchProcessSpec extends Specification with ScalaCheck {
     prop {(n: Int) => {
       val number = new java.util.concurrent.atomic.AtomicLong(0)
 
-      val generator = Generator.create[Int, Int] {
+      val generator = GeneratorLogic.create[Int, Int] {
         s => {
           (s < n).option {
             val ss = s + 1
