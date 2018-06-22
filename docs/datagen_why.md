@@ -19,9 +19,8 @@ We will point out a few examples :
 1) To test some functionalities with in the code (arbitrary generation of data, property based tests)
 2) To test the correctness of realtime reports that we create through streaming.
 2) To test the performance of an end to end pipleline with variable size datasets.
-4) To create a near real-life business scenario in charts, and test models.
+4) To create a near real-life business scenario in charts, test models.
 5) To test the resilience on the system with high/low rate producers.
-and ofcourse, analytics, model verification and so on !
 
 Here, mainly focus on the last 4 bits - where we need to control just about everything of the data that we produce - from its granular business behavior to all the technical aspects floating around !
 
