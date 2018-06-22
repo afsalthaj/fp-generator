@@ -13,16 +13,17 @@ This is about:
 
 ## Why Data Generation ?
 
-The purpose of simulation is enormous. We will point out a few of them, and which part of them are we going to focus.
- 
-1) To test some functionalities with in the code (arbitrary generation of data)
-2) To test the performance of an end to end pipleline with massive datasets.
-3) To test the correctness of the realtime reports that you create out of datasets (streaming).
+There are countless applications of simulation, and countless approaches to achieve the same.
+We will point out a few examples :
+
+1) To test some functionalities with in the code (arbitrary generation of data, property based tests)
+2) To test the correctness of realtime reports that we create through streaming.
+2) To test the performance of an end to end pipleline with variable size datasets.
 4) To create a near real-life business scenario in charts, and test models.
 5) To test the resilience on the system with high/low rate producers.
 and ofcourse, analytics, model verification and so on !
 
-We mainly focus on the last 4 bits - where we need to control just about everything of the data that we produce - from its granular business behavior to all the technical aspects floating around !
+Here, mainly focus on the last 4 bits - where we need to control just about everything of the data that we produce - from its granular business behavior to all the technical aspects floating around !
 
 ----
 
