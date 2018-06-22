@@ -1,5 +1,4 @@
-# `Data Generation` (Why an abstraction ?)
-
+# `Data Generation` && Why an abstraction?
 ----
 
 ## This is:
@@ -12,9 +11,22 @@ This is about:
 
 ---
 
+## Data Generation
 
-## A glance at a few simple problems, to understand what we are trying to achieve!
+The purpose of simulating data can vary
+ 
+1) To test some functionalities with in the code (arbitrary generation of data)
+2) To test the performance of an end to end pipleline with massive datasets.
+3) To test the correctness of the realtime reports that you create out of datasets.
+4) To create a near real-life business scenario in charts!
+5) To test the resilience of the system by simulating a mismatch in the rate of production and the rate of consumption.
+and so on and on !
 
+For the last 4 purpose (and to an extent, for the one one) we need to control just about everything of the data that we produce - from its granular business behavior to all the technical aspects floating around !
+
+----
+
+## A glance at a few simple problems, to shed lights on what we are trying to achieve!
 
 ----
 
