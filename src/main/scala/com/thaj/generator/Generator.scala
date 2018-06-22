@@ -8,16 +8,18 @@ import fs2.Stream
 import scala.concurrent.ExecutionContext.Implicits.global
 
 final case class Generator[S, A](g: GeneratorLogic[S, A], zero: S, delay: Option[Int] = None) {
-  def asFs2Stream[F[_] : Effect]: Stream[F, (S, A)] = Generator.asFs2Stream[F, S, A](zero, delay)(g.next)
+  def asFs2Stream[F[_]](implicit F: Effect[F]): Stream[F, (S, A)] = {
+    def go(z: S): Stream[F, (S, A)] =
+      delayed(g.next(z), delay).flatMap(_.fold(Stream.empty.covaryAll[F, (S, A)]) {
+        case (state, value) =>
+          Stream.eval[F, (S, A)](F.delay((state, value))) ++ go(state)
+      })
+
+    go(zero)
+  }
 }
 
 object Generator {
-  private[generator] def asFs2Stream[F[_], S, A](z: S, delay: Option[Int])(f: S => Option[(S, A)])(implicit F: Effect[F]): Stream[F, (S, A)] =
-    delayed(f(z), delay).flatMap(_.fold(Stream.empty.covaryAll[F,(S, A)]){
-      case (state, value) =>
-        Stream.eval[F, (S, A)](F.delay((state, value))) ++ asFs2Stream[F, S, A](state, delay)(f)
-    })
-
   def run[F[_]: Effect, S, A](gens: Generator[S, A]*)(f: A => F[Unit], maxRate: Int = 4): F[Unit] =
     Fs2PublisherSubscriber.withQueue(gens.map(_.asFs2Stream[F].map(_._2)).reduce(_ merge _), f, maxRate).compile.drain
 
@@ -37,7 +39,7 @@ object Generator {
   def runSync[F[_]: Effect, S, A](gens: Generator[S, A]*)(f: A => F[Unit]): F[Unit] =
     gens.map(_.asFs2Stream[F].map(_._2)).reduce(_ merge _).evalMap(f).compile.drain
 
-  implicit class GeneratorWithZeroOps[S, A](g: Generator[S, A]) {
+  implicit class GeneratorOps[S, A](g: Generator[S, A]) {
     def withDelay(n: Int): Generator[S, A] = g.copy(delay = Some(n))
   }
 }
