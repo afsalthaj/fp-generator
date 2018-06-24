@@ -343,7 +343,7 @@ With this, we have a nice data generation function that handles `state`, `compos
 -------
 
 ## Problem 4 - Concurrency
-In problem 3, we generated account transactions of A and B that are dependent on each other. However, the entire point of giving dependency is that, at the same point in time (or almost), the account balance of B should be greater than that of A.
+In problem 3, we generated account transactions of A and B that are dependent on each other. However, the entire point of giving dependency is that, B and A should be able to do transactions simultaneously (they needn't wait for each other).
 
 ---------
 
