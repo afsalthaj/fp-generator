@@ -22,7 +22,7 @@ We will point out a few examples :
 4) To create a near real-life business scenario in charts, test models.
 5) To test the resilience on the system with high/low rate producers.
 
-Here, mainly focus on the last 4 bits - where we need to control just about everything of the data that we produce - from its granular business behavior to all the technical aspects floating around !
+We focus mainly on the last 4 points - where we need to control just about everything of the data that we produce - from its granular business behavior to all the technical aspects floating around !
 
 ----
 
