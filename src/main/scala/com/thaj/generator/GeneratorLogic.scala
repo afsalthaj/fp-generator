@@ -17,6 +17,8 @@ trait GeneratorLogic[S, A] { self =>
       }
     }
 
+  import scalaz._, Scalaz._
+
   def flatMap[B](f: A => GeneratorLogic[S, B]): GeneratorLogic[S, B] = >>=(f)
 
   def map2[B, C](b: GeneratorLogic[S, B])(f: (A, B) => C): GeneratorLogic[S, C] =
