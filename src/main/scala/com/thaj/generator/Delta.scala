@@ -17,8 +17,10 @@ case class Exchange(
  list2: List[MajorResource2],
 )
 
-trait HasName[A] {
+trait HasName[A] {self =>
   def name(a: A): String
+  def contramap[B](f: B => A): HasName[B] =
+    b => self.name(f(b))
 }
 
 object HasName {
@@ -27,6 +29,11 @@ object HasName {
   implicit val majorResourceName1: HasName[MajorResource1] = _.name
   implicit val majorResourceName2: HasName[MajorResource2] = _.name
   implicit val intName: HasName[Int] = _.toString
+  implicit val stringName: HasName[String] = _.toString
+  implicit val doubleName: HasName[Double] = _.toString
+  implicit val longName: HasName[Long] = _.toString
+  implicit def hasName[A : HasName]: HasName[List[A]] =
+    HasName[A].contramap(_.head)
 }
 
 //
@@ -42,7 +49,7 @@ object Delta {
   object UpdateInfo {
     implicit val updateInfo: Show[UpdateInfo] =
       Show.shows[UpdateInfo](a =>
-        s"{ \n field: ${a.key}, \n previous: ${a.previous}, \n new: ${a.newValue} \n }\n"
+        s"${a.key} : ${a.previous} --->  ${a.newValue}"
       )
   }
 

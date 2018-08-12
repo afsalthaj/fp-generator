@@ -21,26 +21,15 @@ trait LowPriorityInstances0 extends LowPriorityInstances1 {
   implicit def hNilNamer: FindDeltaMeta[HNil] =
     (_, _) => Delta.Meta.empty
 
-  implicit def hListThatCanHaveFOfGOfAnyVal[F[_], G[_], A, B, K <: Symbol, T <: HList](
-    implicit
-    witness: Witness.Aux[K],
-    IsList: A Is F[G[B]],
-    IsAnyVal: B As AnyVal,
-    D: Lazy[FindDeltaMeta[T]],
-  ): FindDeltaMeta[FieldType[K, A] :: T] =
-    (a, b) =>
-      (if (a.head == b.head)
-        Meta.empty
-      else
-        Meta(witness.value.name, (a.head: A).toString, (b.head: A).toString)) ++ D.value.apply(a.tail, b.tail)
-
-  implicit def findDiffA[A, R <: HList](implicit E: LabelledGeneric.Aux[A, R], D: FindDeltaMeta[R]): FindDeltaMeta[A] = {
+  implicit def findDiffA[A, R <: HList](
+    implicit E: LabelledGeneric.Aux[A, R], D: FindDeltaMeta[R]
+  ): FindDeltaMeta[A] = {
     (a, b) => D.apply(E.to(a), E.to(b))
   }
 }
 
 trait LowPriorityInstances1 extends LowPriorityInstances2 {
-  implicit def hListWithSimpleAnyVal[A, K <: Symbol, T <: HList](
+  implicit def hListWithSimpleAnyVal[A : HasName, K <: Symbol, T <: HList](
     implicit
     witness: Witness.Aux[K],
     IsAnyVal: A As AnyVal,
@@ -64,15 +53,22 @@ trait LowPriorityInstances2 extends LowPriorityInstances3 {
     E: Lazy[FindDeltaMeta[InnerT]]
   ): FindDeltaMeta[FieldType[K, H] :: T] =
     (a, b) => {
-      println("hasjhdbwefd")
       val leftList = a.head.asInstanceOf[List[A]]
       val rightList = b.head.asInstanceOf[List[A]]
-      val namesOnleft = leftList.map(t => HasName[A].name(t))
-      val toBeComparedOnRight =
-        rightList.filter(bb => namesOnleft.containsSlice(List(HasName[A].name(bb))))
+      val namesOnLeft = leftList.map(t => HasName[A].name(t))
 
-      val r2 = { leftList.zip(toBeComparedOnRight).map {case (aa, bb) => E.value.apply(eachH.to(aa), eachH.to(bb))} }
-      r2.reduce(_ ++ _).mapKeys(t => witness.value.name + "." +t ) ++ D.value.apply(a.tail, b.tail)
+      val toBeComparedOnRight =
+        rightList.filter {
+          bb => namesOnLeft.containsSlice(List(HasName[A].name(bb)))
+        }
+
+      val r2 =
+        leftList.zip(toBeComparedOnRight).map {
+          case (aa, bb) =>
+            E.value.apply(eachH.to(aa), eachH.to(bb)).mapKeys(t => HasName[A].name(aa) + "." + t)
+        }
+
+      r2.reduce(_ ++ _).mapKeys(t => witness.value.name  +  "." + t) ++ D.value.apply(a.tail, b.tail)
     }
 }
 
@@ -81,27 +77,36 @@ trait LowPriorityInstances3 extends LowPriorityInstances4 {
     implicit
     witness: Witness.Aux[K],
     eachH: LabelledGeneric.Aux[H, InnerT],
+    H: HasName[H],
     D: Lazy[FindDeltaMeta[T]],
     E: Lazy[FindDeltaMeta[InnerT]]
   ): FindDeltaMeta[FieldType[K, H] :: T] =
-    (a, b) =>
-       E.value.apply(eachH.to(a.head.asInstanceOf[H]),
-         eachH.to(b.head.asInstanceOf[H])).mapKeys(t => witness.value.name + "." +t) ++
-         D.value.apply(a.tail, b.tail)
+    (a, b) => {
+
+     val diff =
+       if (H.name(a.head) == H.name(b.head))
+         E.value.apply(eachH.to(a.head.asInstanceOf[H]), eachH.to(b.head.asInstanceOf[H]))
+       else
+         Meta.empty
+
+     // println(HasName[H].name(b.head) + " " + HasName[H].name(a.head))
+
+      diff.mapKeys(t => witness.value.name + "." +  HasName[H].name(b.head) + "." + t) ++
+        D.value.apply(a.tail, b.tail)
+    }
 }
 
 trait LowPriorityInstances4 {
-  implicit def simpleHList[A, K <: Symbol, H, T <: HList](
+  implicit def simpleHList[A, K <: Symbol, H : HasName,  R <: HList, T <: HList](
        implicit
        witness: Witness.Aux[K],
        D: Lazy[FindDeltaMeta[T]]
   ): FindDeltaMeta[FieldType[K, H] :: T] =
-    new FindDeltaMeta[FieldType[K, H] :: T] {
-      override def apply(a: FieldType[K, H] :: T, b: FieldType[K, H] :: T) : Delta.Meta =
-        (if (a.head == b.head)
-          Meta.empty
-        else
-          Meta(witness.value.name, (a.head: H).toString, (b.head: H).toString)) ++ D.value.apply(a.tail, b.tail)
+    (a, b) => {
+      (if (a.head == b.head)
+        Meta.empty
+      else
+        Meta(witness.value.name, (a.head: H).toString, (b.head: H).toString)) ++ D.value.apply(a.tail, b.tail)
     }
 }
 
@@ -110,10 +115,13 @@ object BlaXX extends App {
   case class StorageAccount(blob: Blob, name: String)
   case class Exchange(storageAccounts: List[StorageAccount], sku: String, tier: String, name: String)
 
-  val blob1 = Blob("afsal", List("afsal", "thaj", "bi"), "afsal", "thaj", "thajudeen")
-  val blob2 = Blob("afsal", List("changedListOfuSer", "changedListOfSecondUser"),  "afsal", "thaj", "thajudeen")
-  val blob3 = Blob("anotherafsal", List("changedListOfuSer", "changedListOfSecondUser"),  "afsal", "thaj", "thajudeen")
-  val blob4 = Blob("anotherafsal", List("changedListOfuSer", "changedListOfSecondUser"),  "afsal", "thaj", "thajudeen")
+  val blob1 = Blob("blobName1", List("afsal", "thaj", "bi"), "afsal", "thaj", "thajudeen")
+  val blob2 = Blob("blobName1", List("changedListOfuSer", "changedListOfSecondUser"),  "afsal", "thaj", "thajudeen")
+  val blob3 = Blob("blobName2", List("changedListOfuSer", "changedListOfSecondUser"),  "afsal", "thaj", "thajudeen")
+  val blob4 = Blob("blobName3", List("changedListOfuSerchanged", "changedListOfSecondUser"),  "afsal", "thaj", "thajudeen")
+  val blob5 = Blob("blobName2", List("changedListOfuSerChangedForBlob2", "changedListOfSecondUser"),  "afsal", "thaj", "thajudeen")
+  val blob6 = Blob("blobName2", List("changedListOfuSerChangedForBlob2", "changedListOfSecondUser"),  "afsal", "thaj", "thajudeen")
+  val blob6Changed = Blob("blobName2", List("changedListOfuSerChangedForBlob2", "changedListOfSecondUser"),  "afsal", "thaj", "thajudeen")
 
   implicit val hasNameBlob: HasName[Blob] = _.name
   implicit val hasNameSG: HasName[StorageAccount] = _.name
@@ -121,14 +129,13 @@ object BlaXX extends App {
 
  // println(FindDiff[Blob].apply(blob1, blob2).map(_.shows))
 
+  val storageWithBlob1WithBlobName1 = StorageAccount(blob1, "storageName1")
+  val storageWithBlob2WithBlobName1 = StorageAccount(blob2, "storageName1")
+  val storageWithBlob3WithBlobName2 = StorageAccount(blob3, "storageName2")
+  val storageWithBlob5WithBlobName2 = StorageAccount(blob5, "storageName2")
 
-  val o1 = StorageAccount(blob1, "storageName1")
-  val o3 = StorageAccount(blob2, "storageName1")
-  val zz = StorageAccount(blob3, "storageName1")
-  val ozzz3 = StorageAccount(blob4, "storageName1")
+  val o4 = Exchange(List(storageWithBlob3WithBlobName2, storageWithBlob1WithBlobName1), "1", "a", "exchange1")
+  val o5 = Exchange(List(storageWithBlob5WithBlobName2, storageWithBlob2WithBlobName1), "2", "b", "exchange1")
 
-  val o4 = Exchange(List(o1, zz), "1", "a", "exchange1")
-  val o5 = Exchange(List(o3, ozzz3), "2", "b", "exchange1")
-
-  println(FindDeltaMeta[Exchange].apply(o4, o5).sortBy(_.key).map(_.shows))
+  println(FindDeltaMeta[Exchange].apply(o4, o5).sortBy(_.key).map(_.shows).mkString("\n"))
 }
