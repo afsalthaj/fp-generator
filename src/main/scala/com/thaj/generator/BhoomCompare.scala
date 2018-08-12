@@ -62,13 +62,32 @@ trait LowPriorityInstances2 extends LowPriorityInstances3 {
           bb => namesOnLeft.containsSlice(List(HasName[A].name(bb)))
         }
 
+      val newDetails =
+        rightList.filterNot(
+          t => toBeComparedOnRight.map(t => HasName[A].name(t)).containsSlice(List(HasName[A].name(t)))
+        )
+
+      // convert toString to shows and print it nicely
+      val newMeta =
+        newDetails.map(t => Meta(witness.value.name + "." +HasName[A].name(t), "<no value>", t.toString))
+
+      val deletedDetails =
+        leftList.filterNot(t => rightList.map(t => HasName[A].name(t)).containsSlice(List(HasName[A].name(t))))
+
+      // convert toString to shows and print it nicely
+      val deletedMeta =
+        deletedDetails.map(t => Meta(witness.value.name + "." +HasName[A].name(t), t.toString, "<deleted>"))
+
       val r2 =
         leftList.zip(toBeComparedOnRight).map {
           case (aa, bb) =>
             E.value.apply(eachH.to(aa), eachH.to(bb)).mapKeys(t => HasName[A].name(aa) + "." + t)
         }
 
-      r2.reduce(_ ++ _).mapKeys(t => witness.value.name  +  "." + t) ++ D.value.apply(a.tail, b.tail)
+      deletedMeta.fold(Nil)(_ ++ _ ) ++
+        newMeta.reduce(_ ++ _) ++
+        r2.fold(Nil)(_ ++ _).mapKeys(t => witness.value.name  +  "." + t) ++
+        D.value.apply(a.tail, b.tail)
     }
 }
 
@@ -86,12 +105,14 @@ trait LowPriorityInstances3 extends LowPriorityInstances4 {
      val diff =
        if (H.name(a.head) == H.name(b.head))
          E.value.apply(eachH.to(a.head.asInstanceOf[H]), eachH.to(b.head.asInstanceOf[H]))
-       else
-         Meta.empty
+           .mapKeys(t => witness.value.name + "." +  HasName[H].name(b.head) + "." + t)
+       else {
+         // convert toString to shows and print it nicely
+         Meta(witness.value.name + "." +  HasName[H].name(b.head), "<no value>", b.head.toString) ++
+           Meta(witness.value.name + "." +  HasName[H].name(a.head),  a.head.toString, "<deleted>")
+       }
 
-     // println(HasName[H].name(b.head) + " " + HasName[H].name(a.head))
-
-      diff.mapKeys(t => witness.value.name + "." +  HasName[H].name(b.head) + "." + t) ++
+      diff ++
         D.value.apply(a.tail, b.tail)
     }
 }
@@ -133,9 +154,11 @@ object BlaXX extends App {
   val storageWithBlob2WithBlobName1 = StorageAccount(blob2, "storageName1")
   val storageWithBlob3WithBlobName2 = StorageAccount(blob3, "storageName2")
   val storageWithBlob5WithBlobName2 = StorageAccount(blob5, "storageName2")
+  val extraStorage = StorageAccount(blob5, "storageName3")
+  val deletedStorage = StorageAccount(blob5, "storageName4")
 
-  val o4 = Exchange(List(storageWithBlob3WithBlobName2, storageWithBlob1WithBlobName1), "1", "a", "exchange1")
-  val o5 = Exchange(List(storageWithBlob5WithBlobName2, storageWithBlob2WithBlobName1), "2", "b", "exchange1")
+  val o4 = Exchange(List(storageWithBlob3WithBlobName2, storageWithBlob1WithBlobName1, deletedStorage), "1", "a", "exchange1")
+  val o5 = Exchange(List(storageWithBlob5WithBlobName2, storageWithBlob2WithBlobName1, extraStorage), "2", "b", "exchange1")
 
   println(FindDeltaMeta[Exchange].apply(o4, o5).sortBy(_.key).map(_.shows).mkString("\n"))
 }

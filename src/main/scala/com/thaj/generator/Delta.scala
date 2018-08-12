@@ -32,6 +32,7 @@ object HasName {
   implicit val stringName: HasName[String] = _.toString
   implicit val doubleName: HasName[Double] = _.toString
   implicit val longName: HasName[Long] = _.toString
+  // Make it NonEmptyList
   implicit def hasName[A : HasName]: HasName[List[A]] =
     HasName[A].contramap(_.head)
 }
