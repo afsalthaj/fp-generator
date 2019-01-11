@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.com/afsalthaj/fp-generator.svg?branch=master)](https://travis-ci.com/afsalthaj/fp-generator)
 
+This library is for data generation - solving almost all usecases of data generations!
+
 A simple light weight FP abstraction for data generation and processing with granular control of its behavior, managing state, batching, time delays, concurrency and backpressure.
 
 In short, this abstraction allows you to forget about the mechanical coding that is required for any generation and processing application.
