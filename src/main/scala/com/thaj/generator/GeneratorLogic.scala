@@ -3,6 +3,7 @@ package com.thaj.generator
 import scalaz.{EitherT, Monad, \/}
 import scalaz.syntax.either._
 import scala.{ Stream => SStream}
+import scalaz.Applicative
 
 trait GeneratorLogic[S, A] { self =>
   def next: S => Option[(S, A)]
@@ -34,6 +35,8 @@ trait GeneratorLogic[S, A] { self =>
 }
 
 object GeneratorLogic { self =>
+  def apply[A, B](implicit ev: GeneratorLogic[A, B]): GeneratorLogic[A, B] = ev
+
   def create[S, A](f: S => Option[(S, A)]): GeneratorLogic[S, A] =
     new GeneratorLogic[S, A] {
       def next: (S) => Option[(S, A)] = f
@@ -58,6 +61,12 @@ object GeneratorLogic { self =>
         )
     }
   }
+
+  implicit def applicativeLogic[A]: Applicative[GeneratorLogic[A, ?]] = new Applicative[GeneratorLogic[A, ?]]{
+    override def point[B](b: => B) = GeneratorLogic.point(b)
+    override def ap[B,C](fa: => GeneratorLogic[A, B])(f: => GeneratorLogic[A, B => C]): GeneratorLogic[A, C] = 
+      fa.flatMap(b => f.map(_(b)))
+  } 
 
   implicit class GeneratorOps[S, A](g: GeneratorLogic[S, A]) {
     def withZero(z: S): Generator[S, A] = Generator(g, z)
